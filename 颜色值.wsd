@@ -1,0 +1,82 @@
+@startUML
+actor Alice as a #red
+participant Bob as b #yellow
+a -[#red]> b: 传递消息
+b -[#blue]-> a: 返回消息
+@endUML
+
+
+@startUML
+participant Alice as a
+participant Bob as b
+
+a -> b
+a --> b
+a -\ b
+a --\ b
+a --/ b
+a --// b
+a -->o b
+a <-> b
+a <- b
+
+@endUML
+
+@startUML
+participant Alice as a
+participant Bob as b
+
+==自动添加, 默认从 1 开始, 每次 +1 ==
+autonumber 
+a --> b: 第一次交互
+b --> a: 第二次交互
+==自动添加, 从 15 开始, 每次+1 ==
+autonumber 15
+a --> b: 第 15 次交互
+b --> a: 第 16 次交互
+==自动添加, 从 20 开始, 每次 +5 ==
+autonumber 20 5
+a --> b: 第 n 次交互
+b --> a: 第 n+1 次交互
+
+@endUML
+
+@startUML
+participant Alice as a
+participant Bob as b
+
+==加粗, 三位==
+autonumber "<b> [000]"
+a --> b: text
+a <-- b: text
+
+==加粗, 下划线==
+autonumber 15 "<b> <u>##</u>"
+a --> b: text
+b --> a: text
+
+==加粗, 红色==
+autonumber 20 "<font color=red><b> 消息 0"
+a --> b: text
+a <-- b: text
+@endUML
+
+@startUML
+
+title 标题和分页
+
+a --> b: text
+b --> a: text
+
+newpage
+
+a --> b: text
+b --> a: text
+
+newpage a title for a /nlast page
+
+a --> b: text
+b --> a: text
+
+
+@endUML

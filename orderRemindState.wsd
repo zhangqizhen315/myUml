@@ -1,0 +1,9 @@
+@startuml
+!include ./orderState/remindState.wsd!0
+!include ./orderState/orderState.wsd!0
+st001 -right-> re005
+st002 -right-> re005
+st003 -right-> re005
+st004 -right-> re005
+st005 -right-> re005
+@enduml

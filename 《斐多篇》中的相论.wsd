@@ -1,0 +1,22 @@
+@startuml
+scale 3
+title 美之事物何以谓之美
+class "美之相" as xiang
+class "美之事物" as shi
+
+shi : 美的属性
+
+xiang --> shi: 分有
+@enduml
+
+@startuml
+scale 2
+title 西米亚斯既高又矮
+class "西米亚斯" as man
+class "苏格拉底" as man2
+class "斐多" as man3
+class "高" as gao
+class "矮" as ai
+
+(man, man2).down....gao
+@enduml

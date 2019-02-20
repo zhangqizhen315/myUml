@@ -1,0 +1,347 @@
+@startuml
+scale 3
+title 企业用户用例
+:企业: as qy
+rectangle 供应链金融系统 {
+(注册) as uc1
+(开户) as uc2
+(出售商品) as uc3
+(采购商品) as uc4
+(融资) as uc5
+}
+
+qy -> uc1
+uc1 -> uc2
+uc2 -> uc3
+uc2 -> uc4
+uc4 -> uc5
+
+uc3 -[hidden]-> uc4
+@enduml
+
+@startuml
+scale 3
+title 金融机构用例
+:金融机构: as jj
+rectangle 供应链金融系统 {
+    (注册) as uc1
+    (开户) as uc2
+    (投资) as uc3
+}
+
+jj -> uc1
+uc1 -> uc2
+uc2 -> uc3
+@enduml
+
+@startuml
+scale 3
+title 企业用户注册
+start
+:用户输入企业基本信息;
+:系统对用户输入基本信息进行校验;
+if (校验通过) then (否)
+end
+else (否)
+:创建用户账号;
+:创建企业账号;
+endif
+stop
+@enduml
+
+@startuml
+scale 3
+title 用户开户
+start
+fork
+repeat
+:用户提交实名信息;
+:审核用户实名信息;
+repeat while (审核是否通过) is (否)
+:实名信息认证通过;
+fork again
+:资金验证;
+:资金验证通过;
+fork again
+:银行卡信息认证;
+:银行卡信息认证通过;
+fork again
+:上海银行开户;
+end fork
+:用户认证通过;
+:修改用户状态为已认证;
+stop
+@enduml
+
+@startuml
+scale 3
+title 用户出售商品
+start
+:卖方发布出售信息;
+:买方下单;
+:卖方修改订单信息;
+if (选择支付方式) then (一次性支付)
+:买方一次性支付全款;
+:卖方发货;
+:买方验收;
+:订单完成;
+stop
+else (支付定金)
+:买方支付订金;
+if (选择支付尾款的方式) then (现金支付)
+:买方支付尾款;
+:卖方发货;
+:买方验收;
+:订单完成;
+stop
+else (融资支付)
+if (买方选择融资方式) then (应收账款融资)
+:选择存在应收账款的订单;
+endif
+:向金融机构提交申请;
+fork
+:向被申请的金融机构推送融资;
+fork again
+:在融资列表中展示融资申请;
+end fork
+repeat
+:线下约谈;
+if (约谈过程中是否放弃融资) then (是)
+:停止融资, 返回现金支付尾款流程;
+stop
+endif
+repeat while (约谈是否成功) is (否)
+if (是否为应收账款融资) then (是)
+:修改应收账款订单的支付路径;
+endif
+:金融机构放款;
+:系统自动完成尾款支付;
+:订单完成;
+if (借款企业是否按时还本付息) then (是)
+if (是否为应收账款融资) then (是)
+:还原应收账款订单的支付路径;
+endif
+stop
+else (否)
+if (是否为应收账款融资) then (是)
+:应收账款先行还款;
+if (应收账款是否有剩余) then (有)
+:剩余部分还给借款人;
+stop
+else (无)
+if (本息是否还清) then (是)
+stop
+else (否)
+endif
+endif
+endif
+:借款人继续还款直至清偿本息;
+stop
+@enduml
+
+@startuml
+scale 3
+title 金融机构角度融资的流程
+start
+:金融机构配置融资偏好;
+:系统根据推送融资信息;
+fork
+:金融机构从推送信息中选择融资项目;
+fork again
+:金融机构从融资列表中选择融资项目;
+end fork 
+:向企业发起给约谈;
+if (约谈是否成功) then (否)
+stop
+else (是)
+if (余额是否足够) then (否)
+:充值;
+endif
+:放款;
+
+@enduml
+
+@startuml
+title 融资流程
+start
+:卖方发布出售信息;
+:买方下单;
+:卖方修改订单信息;
+if (是否一次性支付) then (是)
+
+        :买方支付货款;
+        if (交易发生纠纷)
+            :执行交易纠纷解决流程;
+        endif
+        :卖方发货;
+        if (交易发生纠纷)
+            :执行交易纠纷解决流程;
+        endif
+        :买方验收;
+        :解冻货款;
+        stop
+else (否)
+:买方支付定金;
+        if (交易发生纠纷)
+            :执行交易纠纷解决流程;
+        endif
+if (是否融资支付) then (融资支付)
+    if (选择融资方式) then (信用融资)
+        :买方申请融资支付尾款;
+        :买方选择申请金融机构;
+        fork
+            :系统向申请的金融机构推送融资申请;
+        fork again 
+            :系统将融资申请推入融资列表;
+        end fork
+        :金融机构选择融资项目;
+        :线下约谈;
+        while (约谈是否成功) is (否)
+            if (是否超过融资期限) then (是)
+                if (是否未完成融资) then (是)
+                    :转现金支付流程;
+                    stop
+                endif
+            endif
+        end while
+        -> 是;
+        if (截至放款日融资标的是否满标) then (否)
+            :执行未满标处理流程;
+            stop
+        endif
+        :金融机构放款;
+        :系统自动完成货款支付;
+        :卖家发货;
+        if (买家是否按时还本付息) then (是)
+            :金融机构获得收益;
+            stop
+        else (否)
+            :设置买家逾期;
+            :买家继续还本还款, 直至还清欠款;
+            stop
+       endif 
+    else (应收账款融资)
+        :买方申请融资支付尾款;
+        :买方选择应收账款订单;
+        :买方选择申请金融机构;
+        fork
+            :系统向申请的金融机构推送融资申请;
+        fork again 
+            :系统将融资申请推入融资列表;
+        end fork
+        :金融机构选择融资项目;
+        :线下约谈;
+        while (约谈是否不能功) is (否)
+            if (是否放弃融资) then (是)
+                if (是否未完成融资) then (是)
+                    :转现金支付流程;
+                    stop
+                endif
+            endif
+        endwhile
+        if (截至放款日融资标的是否满标) then (否)
+            :执行未满标处理流程;
+            stop
+        endif
+        :金融机构放款;
+        :系统自动完成货款支付;
+        :卖家发货;
+        if (买家是否按时还本付息) then (是)
+            :金融机构收到收益;
+            :还原支付路径;            
+            stop
+        else (否)
+            :应收账款优先支付金融机构本息;
+            if (是否还清本息) then (是)
+                :剩余部分还给买家;
+                stop
+            else (否)
+                :设置买家逾期;
+                :买家继续还款, 直到还清欠款;
+                stop
+            endif
+        endif
+    endif
+else (现金支付)
+        :买方支付尾款;
+        if (交易发生纠纷)
+            :执行交易纠纷解决流程;
+        endif
+        :卖方发货;
+        if (交易发生纠纷)
+            :执行交易纠纷解决流程;
+        endif
+        :买方验收;
+        :解冻货款;
+        stop
+endif
+@enduml
+
+@startuml
+scale 3
+title 交易纠纷解决流程
+start
+if (交易发生纠纷) then (是)
+    :锁定订单;
+    :线下处理纠纷;
+    if (纠纷处理结果) then (订单继续)
+        :解锁订单;
+    else (订单结束)
+        :关闭订单;
+        :线下处理违约部分;
+        :已付货款原路返回;
+        stop
+    endif
+endif
+:继续中断流程;
+stop
+@enduml
+
+@startuml
+scale 3
+title 融资未满标处理流程
+start
+if (截至放款日融资标的是否满标) then (否)
+    :锁定融资贷款订单;
+    :提示订单锁定原因;
+    :金融机构, 买方, 卖方协商解决机制;
+    if (是否继续订单) then (是)
+    elseif (是否转现金支付流程) then (是)
+        :转现金支付流程;
+        :金融机构停止放款;
+        stop
+    else (否)
+        :关闭订单;
+        :线下处理违约部分;
+        :已付货款原路返回;
+        stop
+    endif
+endif
+stop
+@enduml
+
+@startuml
+scale 3 
+title 页面跳转关系
+
+@enduml
+
+@startuml
+scale 3 
+title 用例图
+:企业: -> (登录)
+(登录) -> (下单)
+(下单) -> (完成订单)
+(完成订单) --> (一次性支付)
+(完成订单) --> (支付定金)
+(支付定金) --> (现金支付尾款)
+(支付定金) --> (融资支付尾款)
+(融资支付尾款) --> (信用融资)
+(融资支付尾款) --> (应收账款融资)
+@enduml
+
+@startuml
+scale 3
+title 当前用户
+
+@enduml

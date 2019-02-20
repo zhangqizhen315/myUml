@@ -1,0 +1,42 @@
+@startUML
+!include ./cl006.wsd!1
+!include ./cl006.wsd!2
+!include ./cl006.wsd!3
+scale 3
+title 0
+cl006 --> cl006_1
+cl006 --> cl006_2
+@endUML
+
+@startUML
+title 1_cl006银行流水
+class "银行流水" as cl006 <006>
+@endUML
+
+@startUML
+title 2_cl006_1个人银行流水
+class "个人银行流水" as cl006_1 <006_1> {
+    交易时间
+    支出
+    收入
+    账户余额
+    对方账户
+    对方户名
+    币种
+    摘要（转账, 支出, 收入）
+}
+@endUML
+
+@startUML
+title 3_cl006_2
+class "企业银行流水" as cl006_2 <006_2> {
+    交易时间
+    发生额_借方
+    发生额_贷方
+    余额
+    对方户名
+    对方账户
+    对方开户机构
+    记账日期
+}
+@endUML

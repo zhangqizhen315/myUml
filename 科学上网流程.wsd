@@ -1,0 +1,10 @@
+@startUML
+title 科学上网简要流程
+start
+:购买搬瓦工 vps (就是云服务器啦);
+:一键设置 shadowsocks;
+:下载 shadowsocks 客户端;
+:设置 shadowsocks 客户端;
+:用 google.com 测试一下是否成功了;
+end
+@endUML

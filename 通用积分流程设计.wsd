@@ -1,0 +1,185 @@
+@startUML
+scale 3
+title 闭环流程
+(积分生成) --> (获得积分)
+(卡券生成) --> (推荐卡券)
+(用户消费) -right-> (获得积分)
+(获得积分) -right-> (推荐卡券)
+(推荐卡券) -down-> (用户购买)
+(用户购买) -left-> (使用卡券)
+(使用卡券) -up-> (用户消费)
+@endUML
+要查信息
+要快速查信息
+如果什么
+@startUML
+scale 3
+title 用户消费
+(用户消费) --> (线上消费返积分)
+(用户消费) --> (线下消费返积分)
+
+(线下消费返积分) --> (商家扫描用户提供的二维码)
+(线下消费返积分) --> (用户扫描商家提供的二维码)
+
+(用户扫描商家提供的二维码) --> (商家实时生成二维码)
+(用户扫描商家提供的二维码) --> (商家非实时生成二维码)
+@endUML
+
+@startUML
+scale 3
+title [线上消费返积分接口] 的处理
+participant 商家系统 as sj
+participant 积分平台 as pt
+participant 支付宝 as zfb
+participant 微信支付 as wxzf
+
+autoNumber
+sj -> pt: [消费返积分接口] push: 商家id, 用户id, 商家订单id, 支付金额, 支付渠道
+pt -> sj: [查询订单接口] pull: 商家订单id
+alt 商家订单不存在
+    sj --> pt: [查询订单接口] 返回信息: 订单不存在
+    pt --> sj: [消费返积分接口] 返回信息: 支付失败
+else 商家订单存在
+    sj --> pt: [查询订单接口] 返回信息: 订单详情
+    alt 支付渠道为支付宝
+        pt -> zfb: [支付接口] push: 用户id, 金额
+        alt 支付失败
+            zfb --> pt: [支付接口] 返回信息: 支付失败
+            pt --> sj: [消费返积分接口] 返回信息: 支付失败
+        else 支付成功
+            zfb --> pt: [支付成功] 返回信息: 支付成功
+            pt --> sj: [消费返积分接口] 返回信息: 支付结果, 积分发放成功, 积分发放详情
+        end
+    else 支付渠道为微信支付
+        pt -> wxzf: [支付接口] push: 用户id 金额
+        alt 支付失败
+            wxzf --> pt: [支付接口] 返回信息: 支付失败
+            pt --> sj: [消费返积分接口] 返回信息: 支付失败
+        else 支付成功
+            wxzf --> pt: [支付接口] 返回信息: 支付成功
+            pt --> sj: [消费返积分接口] 返回信息: 支付成功, 积分发放成功, 积分发放详情
+        end
+    end
+end
+
+@endUML
+
+@startUML
+scale 3
+title 商家扫描用户提供的二维码支付返回积分流程
+start
+:用户打开积分平台应用, 生成二维码;
+note left
+    二维码包含信息
+    用户id
+endnote
+:商家扫描用户二维码;
+:商家管理员录入订单详情;
+:商家系统调用积分平台 [消费返积分接口] ;
+stop
+@endUML
+
+@startUML
+scale 3
+title 用户扫描商家提供的二维码 (实时二维码) 支付返回积分流程
+start
+:商家输入订单及金额;
+:商家出示二维码;
+note left
+    二维码包含信息
+    商家id
+    订单id
+    支付金额
+endnote
+:用户打开积分平台应用, 扫描商家二维码;
+:用户选择支付方式;
+:积分平台按商家调用 [消费返回积分接口] ;
+stop
+@endUML
+
+@startUML
+title 用户扫描商家提供的二维码 (实时二维码) 支付返回积分流程
+start
+:商家出示二维码;
+note left
+    二维码包含信息
+    商家id
+endnote
+:用户打开积分平台应用, 扫描商家二维码;
+:用户选择支付方式;
+:用户输入金额;
+note right
+    这种情况给用户发积分么?
+endnote
+stop
+@endUML
+
+@startUML
+scale 3
+title 传订单记录返积分流程
+start
+:用户打开商家系统;
+:用户打开订单页面, 查看哪些订单未领取积分;
+:用户操作传订单返积分功能;
+:商家系统调用积分平台 [传订单记录返积分] 接口;
+stop
+@endUML
+
+@startUML
+scale 3
+title [传订单记录返回积分] 接口处理
+participant 商家系统 as sj
+participant 积分平台 as pt
+
+autoNumber
+sj -> pt: push: 积分订单号
+pt -> pt: 查询订单号是否已发积分
+alt 订单已发放积分
+    pt --> sj: 返回消息: 该订单已发积分
+else
+    订单未发放积分
+    pt -> sj: pull: 查询订单详情
+    alt 订单不存在
+        sj --> pt: 返回消息: 订单不存在
+        pt --> sj: 返回消息: 积分发放失败, 订单不存在
+    end
+    sj --> pt: 返回信息: 订单信息
+    pt -> pt: 发行积分
+    pt --> sj: 返回消息: 积分发放成功, 积分详情
+end
+@endUML
+
+@startUML
+scale 3
+title 用户注册登录
+start
+fork
+    :用户进入通用积分平台;
+    if () then (登录)
+        :用户登录通用积分平台;
+        :显示用户积分余额;
+        end
+    else (注册)
+    endif
+fork again
+    :用户从商家系统跳转积分卡券平台;
+    if (商家平台是否提供唯一标识) then (提供)
+        if (该唯一标识是否有用户账号与之关联) then (有)
+            :以关联的用户账号登录系统;
+            :显示用户积分余额;
+            end
+        else (没有)
+        endif
+    else (未提供)
+    endif
+end fork
+:进入用户注册页面;
+:用户完成注册;
+:用户关联商户;
+stop
+@endUML
+
+@startUML
+scale 3
+title 
+@endUML

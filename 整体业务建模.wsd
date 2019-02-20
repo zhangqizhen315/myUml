@@ -1,0 +1,761 @@
+@startUML
+scale 3
+title 整体流程概要
+(uc001用户入驻) as uc001
+(uc002快速发布) as uc002
+(uc003确定价格) as uc003
+(uc004完成订单) as uc004
+(uc005融资) as uc005
+(uc006充值提现) as uc006
+
+uc001 <-- uc002: 依赖
+uc001 <-- uc003: 依赖
+uc001 <-- uc004: 依赖
+uc002 -> uc003
+uc003 -> uc004
+uc004 <-- uc005: 依赖
+uc006 <-- uc004: 依赖
+@endUML
+
+@startUML
+scale 3
+title uc001用户入驻用例扩展
+:管理员: as admin
+:用户: as user
+(uc001用户入驻) as uc001
+rectangle 前台 {
+    (uc001_1用户登录) as uc001_1
+    (uc001_1_1记录密码) as uc001_1_1
+}
+rectangle 后台 {
+    (uc001_2用户录入) as uc001_2
+    (uc001_3用户认证) as uc001_3
+    (uc001_3_1实名认证) as uc001_3_1
+    (uc001_3_2资金认证) as uc001_3_2
+    (uc001_3_3银行卡认证) as uc001_3_3
+    (uc001_3_4中信开户) as uc001_3_4
+    (uc001_3_3_1绑定银行卡) as uc001_3_3_1
+}
+
+uc001 --> uc001_1: 包含
+uc001 --> uc001_2: 包含
+uc001_1 --> uc001_1_1
+admin -> uc001_2
+uc001_1 <- user
+uc001_2 --> uc001_3
+uc001_3 --> uc001_3_1
+uc001_3 --> uc001_3_2
+uc001_3 --> uc001_3_3
+uc001_3 --> uc001_3_4
+uc001_3_3_1 <-- uc001_3_3: 依赖
+@endUML
+
+@startuML
+scale 3
+title uc001_2用户录入
+start
+:管理员录入用户;
+fork
+while (实名认证) is (未通过)
+:修改实名信息;
+end while(通过) 
+:授信;
+fork again
+while (资金认证) is (未通过)
+:修改资金信息;
+end while(通过)
+:授信;
+fork again
+:添加银行卡;
+while (银行卡信息认证) is (未通过)
+:修改银行卡信息;
+end while(通过)
+:授信;
+fork again
+:中信开卡;
+if (认证是否通过) then (否)
+end
+else (是)
+:授信;
+endif
+end fork
+fork
+:重置密码;
+fork again 
+:禁用;
+fork again
+:编辑用户;
+end fork
+stop
+@endUML
+
+@startUML
+scale 3
+title 用户状态
+state "001认证中" as st001 
+state "002正常" as st002
+state "003禁用" as st003
+
+[*] -> st001: 录入用户信息
+st001 --> st002: 完成认证
+st002--> st003: 禁用
+st003 --> st002: 解除禁用
+
+st001 : 用户登录后进入认证页面
+st002 : 用户
+@endUML
+
+@startUML
+scale 3
+title uc001_1用户登录流程图
+start
+repeat
+:用户输入用户名/密码, 并点击提交;
+:系统验证用户输入内容;
+repeat while (用户输入内容是否真实有效) is (无效)
+-> 有效;
+:用户登录系统, 并进入首页;
+end
+@endUML
+
+@startUML
+scale 3
+title uc001用户入驻业务建模
+class cl001 as "用户" <cl001>
+class cl002 as "管理员" <cl002>
+class cl003 as "融资用户" <cl003>
+class cl004 as "供求用户" <cl004>
+
+cl001 : ...
+cl001 : 登录()
+cl001 : 登录验证()
+
+cl002 : ...
+cl002 : 创建用户()
+cl002 : 审核用户()
+
+cl003 : 查询用户()
+cl003 : 修改状态()
+
+cl004 : ...
+cl004 : 修改状态()
+cl004 : 查询用户()
+
+cl001 <|-- cl003: 继承 
+cl001 <|-- cl004: 继承
+cl001 <- cl002: < 创建
+cl002 --> cl004: 审核
+@endUML
+
+@startUML
+scale 3
+title uc001_1用户登录时序图
+actor 用户 as user
+box "供应链金融系统"
+participant 系统 as sys
+participant 用户 as c_user
+end box
+
+autoNumber
+user -> sys: 用户登录
+sys -> c_user: 登录()
+c_user -> c_user: 登录验证()
+c_user --> sys: 返回消息: 登录成功
+sys --> user: 提示: 登录成功
+@endUML
+
+@startUML
+scale 3
+title uc001_2_1供求用户录入时序图
+actor 管理员 as admin
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 管理员 as ba
+participant 供求用户 as cgqu
+end box
+participant 中诚信 as zcx
+
+autoNumber
+admin -> sys: 创建供求用户
+sys -> ba: 创建用户()
+ba -> cgqu: 创建供求用户()
+cgqu --> ba: 返回消息: 创建成功
+ba --> sys: 返回消息: 创建成功
+sys --> admin: 提示: 创建成功
+admin -> sys: 审核用户
+sys -> cgqu: 查询用户()
+cgqu --> sys: 返回: 用户详情
+sys --> admin: 返回: 供求用户审核页面
+admin -> sys: 用户点击审核通过按钮
+sys -> ba: 审核用户()
+ba -> cgqu: 修改状态()
+cgqu --> ba: 返回消息: 修改状态成功
+ba --> sys: 返回消息: 审核成功
+sys --> ba: 提示: 审核成功
+ba -> sys: 审核中诚信
+sys -> ba: 审核中诚信()
+ba -> cgqu: 查询用户()
+cgqu --> ba: 返回消息: 用户信息
+ba -> zcx: 调用查询接口
+zcx --> ba: 返回信息: 中诚信用户信息
+ba --> sys: 返回信息: 中诚信用户信息
+sys --> admin: 显示中诚信用户信息
+admin -> sys: 点击用户信息
+sys -> ba: 审核中诚信()
+ba -> cgqu: 修改状态()
+cgqu --> ba: 返回消息: 修改成功
+ba --> sys: 返回消息: 审核成功
+sys --> admin: 提示: 审核成功
+@endUML
+
+@startUML
+scale 3
+title 日
+@endUML
+
+@startUML
+scale 3
+title uc002快速发布用例扩展
+:管理员: as admin
+:用户: as user
+(uc002快速发布) as uc002
+rectangle 前台 {
+    (uc002_1发布求购) as uc002_1
+    (uc002_2发布出售) as uc002_2
+}
+rectangle 后台 {
+    (uc002_3商品上线) as uc002_3
+    (uc002_4商品管理) as uc002_4
+}
+
+uc002 --> uc002_1: 包含
+uc002 --> uc002_2: 包含
+uc002 --> uc002_3: 包含
+uc002 --> uc002_4: 包含
+
+uc002_1 <-- user
+uc002_2 <-- user
+uc002_3 <-- admin
+uc002_4 <-- admin
+@endUML
+
+@startUML
+scale 3
+title uc002快速发布流程图
+start
+:管理员输入商品规格\品牌\分类等商品管理信息;
+:用户进入快速发布页面;
+fork
+:用户选择快速发布求购信息;
+:用户输入求购信息;
+fork again
+:用户选择快速发布出售信息;
+:用户输入出售信息;
+end fork
+:管理员上线商品;
+:前台显示商品;
+end
+@endUML
+
+@startUML
+scale 3
+title uc002快速发布业务建模
+class cl002 as "管理员" <cl002>
+class cl004 as "供求用户" <cl004>
+class cl005 as "商品" <cl005>
+class cl006 as "品牌" <cl006>
+class cl007 as "规格" <cl007>
+class cl008 as "分类" <cl008>
+class cl009 as "求购信息" <cl009>
+class cl010 as "出售信息" <cl010>
+
+cl002 : ...
+cl002 : 创建品牌()
+cl002 : 创建规格()
+cl002 : 创建分类()
+cl002 : 上架()
+
+cl004 : ...
+cl004 : 发布出售信息()
+cl004 : 发布求购信息()
+
+cl002 --> cl006: 创建 >
+cl002 --> cl007: 创建 >
+cl002 --> cl008: 创建 >
+cl009 <-- cl004: 创建 <
+cl010 <-- cl004: 创建 <
+cl005 --* cl009: 包含 <
+cl005 --* cl010: 包含 <
+cl006 "1"--*"1" cl005: 包含 <
+cl008 "1"--*"1" cl005: 包含 <
+cl002 --> cl005: 上架 >
+cl008 "1"*-"*" cl007: 包含 >
+
+cl008 -left[hidden]- cl006
+@endUML
+
+@startUML
+scale 3
+title uc003询报价用例扩展
+:用户: as user
+(uc003询报价) as uc003
+rectangle 前台 {
+    (uc003_1供货询报价) as uc003_1
+    (uc003_2求购询报价) as uc003_2
+}
+
+uc003 --> uc003_1: 包含
+uc003 --> uc003_2: 包含
+uc003_1 <-- user
+uc003_2 <-- user
+@endUML
+
+@startUML
+scale 3
+title uc003询报价流程
+start
+fork
+:用户进入供货专区;
+:用户选择供货信息并发起询报价;
+fork again
+:用户进入求购专区;
+:用户选择求购信息并发起询报价;
+end fork
+repeat
+if (用户是否同新价格与数量) then (是)
+if (用户是否是买家) then (是)
+:用户下单;
+:生成订单;
+end
+else (否)
+:用户是点击成交;
+endif
+else (否)
+if (价格与数量是否被成交) then (是)
+else (否)
+:用户重新输入新价格与数量;
+endif
+endif
+repeat while 
+@endUML
+
+@startUML
+scale 3
+title uc003询报价业务建模
+class cl004 as "供求用户" <cl004>
+class cl009 as "出售信息" <cl009>
+class cl010 as "求购信息" <cl010>
+class cl011 as "询报价" <cl011>
+class cl012 as "询报价信息" <cl012>
+class cl013 as "采购订单" <cl013>
+class cl014 as "买方" <cl014>
+class cl015 as "卖方" <cl015>
+
+cl004 : 发起询报价()
+cl004 : 发送信息()
+
+cl014 : 下单()
+
+cl015 : 成交()
+
+cl004 <|- cl014
+cl004 <|- cl015
+cl004 --> cl009: 发起 >
+cl004 --> cl010: 发起 >
+cl009 --> cl011: 产生 >
+cl010 --> cl011: 产生 >
+cl011 "1"*-"*" cl012: 包含 <
+cl015 --> cl012
+cl014 --> cl012
+(cl014,cl012) "1"-->"1" cl013: 产生
+@endUML
+
+@startUML
+scale 3
+title uc004完成订单用例扩展
+:供求用户: as ug
+:融资用户: as ur
+(uc004完成订单) as uc004
+rectangle 前台 {
+    (uc004_1支付订单) as uc004_1
+    (uc004_2发货收货) as uc004_2
+    (uc004_1_1现金支付) as uc004_1_1
+    (uc004_1_2融资支付) as uc004_1_2
+}
+rectangle 后台 {
+    (uc004_3订单管理) as uc004_3
+}
+uc004 --> uc004_1: 包含
+uc004 --> uc004_2: 包含
+uc004 --> uc004_3: 包含
+uc004_1 --> uc004_1_1: 包含
+uc004_1 --> uc004_1_2: 包含
+uc004_1_2 <-- ur
+uc004_1_1 <-- ug
+uc004_2 <-- ug
+uc004_3 <-- admin
+@endUMl
+
+@startUML
+scale 3
+title uc004_1_1现金支付流程图
+start
+:用户询报价时选择现金支付;
+:系统生成现金支付订单;
+if (用户是否支付首笔订单) then (是)
+:系统代收;
+:订单生效;
+while (用户是否支付尾款) is (否)
+endwhile
+-> 是;
+:系统代收;
+:系统通知发货;
+end
+else (否)
+:订单失效;
+end
+@endUML
+
+@startUML
+scale 3
+title uc004_1_2融资支付流程图
+start
+:用户询报价时选择融资支付;
+:系统生成融资支付订单;
+if (用户是否支付首笔订单) then (是)
+:系统代收;
+:订单生效;
+:系统生成融资标的;
+while (是否满标) is (否)
+:融资用户投资标的;
+endwhile
+-> 是;
+
+:系统代收;
+:系统通知发货;
+end
+else (否)
+:订单失效;
+end
+@endUML
+
+@startUML
+scale 3
+title uc004_2发货收货流程图
+start
+:卖方发货;
+:系统通知验货/收货;
+while (买方进行验货/收货) is (是否完成)
+endwhile
+:系统将全款打给卖方;
+end
+@endUML
+
+@startUML
+scale 3
+title uc004_3订单管理流程图
+start
+:管理员进入订单管理页面;
+fork
+:操作修改订单;
+fork again
+:用户申请管理员介入订单;
+:管理员操作介入订单;
+end fork
+end
+@endUML
+
+@startUML
+scale 3
+title uc004完成订单业务建模
+class cl013 as "采购订单" <cl013>
+class cl002 as "管理员" <cl002>
+together {
+class cl003 as "融资用户" <cl003>
+class cl014 as "买方" <cl014>
+class cl015 as "卖方" <cl015>
+class cl016 as "融资标的" <cl016>
+}
+class cl017 as "发货单" <cl017>
+class cl018 as "冻结账户" <cl018>
+class cl019 as "融资账户" <cl019>
+
+cl002 : 管理订单()
+
+cl003 : 投资()
+
+cl013 : 修改订单状态()
+cl013 : 创建融资标的()
+
+cl014 : 支付首付()
+cl014 : 支付尾款()
+cl014 : 验收货()
+
+cl015 : 发货()
+
+cl016 : 满标()
+
+cl018 : 解冻货款()
+
+cl019 : 支付尾款()
+
+cl002 -> cl013: 管理 >
+cl013 <-- cl003: 修改状态 <
+cl013 <-- cl015: 修改状态 <
+cl013 <-- cl014: 修改状态 <
+cl013 --> cl016: 创建 >
+cl016 <- cl003: 投资 <
+cl016 --> cl019: 创建 >
+cl014 --> cl018: 支付 >
+cl019 -> cl018: 支付 >
+cl018 -> cl017: 创建 >
+cl015 --> cl017: 发货 >
+cl014 --> cl017: 验收货款 >
+@endUML
+
+@startUML
+scale 3
+title uc005融资用例扩展
+:供求用户: as ug
+:融资用户: as ur
+:管理员: as admin
+(uc005融资) as uc005
+rectangle 前台 {
+    (uc005_1投资) as uc005_1
+    (uc005_2还款) as uc005_2
+}
+rectangle 后台 {
+    (uc005_3授信) as uc005_3
+    (uc005_4标的管理) as uc005_4
+    (uc005_5审核管理) as uc005_5
+}
+
+uc005 --> uc005_1: 包含
+uc005 --> uc005_2: 包含
+uc005 --> uc005_3: 包含
+uc005 --> uc005_4: 包含
+uc005 --> uc005_5: 包含
+uc005_1 <-- ug
+uc005_2 <-- ug
+uc005_1 <-- ur
+uc005_2 <-- ur
+uc005_3 <-- admin
+uc005_4 <-- admin
+uc005_5 <-- admin
+@endUML
+
+@startUML
+scale 3
+title uc005_1投资流程图
+start
+:融资用户进入融资列表页面;
+:融资用户选择融资项目;
+:融资用户进入详情页面;
+:融资用户输入投资金额;
+:融资用户点击立即投资按钮;
+:系统生成还款计划;
+end
+@endUML
+
+@startUML
+scale 3
+title uc005_2还款流程图
+start
+:系统根据还款计划生成融资还款列表;
+:供求用户进入融资管理页面;
+:供求用户进入还款页面;
+:供求用户输入支付密码, 点击确认还款按钮;
+:系统使用用户余额进行还款;
+end
+@endUML
+
+@startUML
+scale 3
+title uc005_3授信管理流程图
+start
+:管理员进入授信管理页面;
+:管理员选择授信管理对象;
+:管理员输入授信管理额度;
+:管理员提交授信;
+end
+@endUML
+
+@startUML
+scale 3
+title uc005_4标的管理流程图
+start
+:管理员进入标的管理页面;
+:管理员选择要管理的标的;
+fork
+:管理员进行满标管理;
+fork again
+:管理员进行截标管理;
+end fork
+end
+@endUML
+
+@startUML
+scale 3
+title uc005_5审核管理
+start
+:管理员进入审核管理页面;
+:管理员选择要审核的项目;
+:管理员进行审核;
+end
+@endUML
+
+@startUML
+scale 3
+title uc005融资业务建模
+class cl002 as "管理员" <cl002>
+class cl003 as "融资用户" <cl003>
+class cl004 as "供求用户" <cl004>
+class cl016 as "融资标的" <cl016>
+class cl020 as "还款计划" <cl020>
+class cl021 as "投资订单" <cl021>
+
+cl002 : 授信()
+cl002 : 管理标的()
+cl002 : 审核标的()
+
+cl003 : 下单()
+cl003 : 支付()
+
+cl004 : 还款()
+
+cl016 : 生成还款计划()
+cl016 : 生成投资订单()
+
+cl020 : 通知还款()
+
+cl002 -> cl004: 授信 >
+cl002 --> cl016: 管理 >
+cl002 --> cl016: 审核 >
+cl016 <- cl003: 下单 <
+(cl016,cl003) --> cl021: 生成
+cl003 --> cl021: 支付 >
+cl021 -> cl020: 生成 >
+cl004 ---> cl020: 还款
+@endUML
+
+@startUML
+scale 2
+title 其它支撑性功能
+rectangle 前台 {
+    together {
+        (uc007账户密码管理) as uc007
+        (uc007_1重置账户密码) as uc007_1
+        (uc007_2忘记账户密码) as uc007_2
+    }
+    together {
+        (uc008交易密码管理) as uc008
+        (uc008_1重置账户密码) as uc008_1
+        (uc008_2重置账户密码) as uc008_2
+    }
+}
+    rectangle 后台 {
+        together {
+        (uc009系统维护) as uc009
+        (uc009_1网站管理) as uc009_1
+        (uc009_2合作伙伴管理) as uc009_2
+        (uc009_3管理员管理) as uc009_3
+        (uc009_4权限管理) as uc009_4
+        (uc009_5系统日志) as uc009_5
+        (uc009_6上传记录) as uc009_6
+        }
+        together {
+        (uc010资金管理) as uc010
+        (uc010_1三方支付管理) as uc010_1
+        (uc010_2三方物流管理) as uc010_2
+        (uc010_3三方仓库管理) as uc010_3
+        }
+        together {
+        (uc011三方管理) as uc011
+        (uc012消息管理) as uc012
+        (uc013运营管理) as uc013
+        }
+    }
+    uc007 --> uc007_1
+uc007 --> uc007_2
+uc008 --> uc008_1
+uc008 --> uc008_2
+
+uc009 --> uc009_1
+uc009 --> uc009_2
+uc009 --> uc009_3
+uc009 --> uc009_4
+uc009 --> uc009_5
+uc009 --> uc009_6
+uc010 --> uc010_1
+uc010 --> uc010_2
+uc010 --> uc010_3
+
+uc007 -[hidden]---- uc008
+uc008 -[hidden]---- uc009
+uc009 -[hidden]---- uc010
+uc010 -[hidden]---- uc010
+uc010 -[hidden]---- uc011
+@endUML
+
+@startUML
+scale 3
+title 业务概念汇总
+class cl001 as "用户" <cl001>
+class cl002 as "管理员" <cl002>
+class cl003 as "融资用户" <cl003>
+class cl004 as "供求用户" <cl004>
+class cl005 as "商品" <cl005>
+class cl006 as "品牌" <cl006>
+class cl007 as "规格" <cl007>
+class cl008 as "分类" <cl008>
+class cl009 as "求购信息" <cl009>
+class cl010 as "出售信息" <cl010>
+class cl011 as "询报价" <cl011>
+class cl012 as "询报价信息" <cl012>
+class cl013 as "采购订单" <cl013>
+class cl014 as "买方" <cl014>
+class cl015 as "卖方" <cl015>
+class cl016 as "融资标的" <cl016>
+class cl017 as "发货单" <cl017>
+class cl018 as "冻结账户" <cl018>
+class cl019 as "融资账户" <cl019>
+@endUML
+
+@startUML
+scale 3
+title 完整流程
+:后台录入用户信息;
+
+@endUML
+
+@startUML
+scale 3
+title uc001用户入驻
+start
+fork
+:用户注册 (一期暂无);
+fork again
+:后台录入用户;
+end fork
+while (用户认证) is (未通过)
+:重新录入认证信息;
+endwhile
+-> 认证通过;
+fork
+:后台发布商品;
+fork again
+:前台发布商品;
+end fork
+if (审核商品) then (不通过)
+end
+else (通过)
+endif
+:商品上架;
+:询报价;
+:下单;
+:支付定金;
+if (支付尾款方式) then (现金)
+    
+else (融资)
+endif
+@endUML

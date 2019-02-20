@@ -1,0 +1,13 @@
+@startUML
+scale 3
+title cl009交易记录
+class "交易记录" as cl009 <009>
+
+class "GPS" as cl009_1 <009_1>
+class "TMS" as cl009_2 <009_2>
+class "SAAS" as cl009_3 <009_3>
+
+cl009 --> cl009_1
+cl009 --> cl009_2
+cl009 --> cl009_3
+@endUML

@@ -1,0 +1,126 @@
+@startuml
+title 图书借阅系统用例图
+actor 系统管理员 as sys
+actor 图书管理员 as tushu
+actor 会员 as user
+
+package 图书管理系统 {
+together {
+(1 系统管理) as uc1
+(2 图书管理员管理) as uc2
+(3 图书管理) as uc3
+(4 借阅管理) as uc4
+}
+
+together {
+(1.1 角色管理) as uc1_1
+(1.2 权限管理) as uc1_2
+(1.3 配置管理) as uc1_3
+}
+
+together {
+(2.1 新增图书管理员) as uc2_1
+(2.2 修改图书管理员) as uc2_2
+(2.3 图书管理员列表) as uc2_3
+(2.4 删除图书管理员) as uc2_4
+}
+
+together {
+(3.1 新增图书) as uc3_1
+(3.2 修改图书) as uc3_2
+(3.3 图书查找) as uc3_3
+(3.4 删除图书) as uc3_4
+}
+
+together {
+(4.1 新增订单) as uc4_1
+(4.2 查看订单) as uc4_2
+(4.3 修改订单) as uc4_3
+(4.4 删除订单) as uc4_4
+}
+
+together {
+(5 图书管理员登录) as uc5
+(6 图书查询) as uc6
+(7 订单查询) as uc7 
+(8 借书管理) as uc8
+(9 还书管理) as uc9
+}
+
+together {
+    (10 会员登录) as uc10
+    (11 图书查询) as uc11
+    (12 订单查询) as uc12
+    (13 到期预警) as uc13
+}
+
+}
+
+uc5 - tushu
+uc6 - tushu
+uc7 - tushu
+uc8 - tushu
+uc9 - tushu
+
+uc10 - user
+uc11 - user
+uc12 - user
+uc13 - user
+
+
+sys - uc1
+sys - uc2
+sys - uc3
+sys - uc4
+
+tushu -[hidden]down- user
+
+uc1 -[hidden]down---- uc2
+uc2 -[hidden]down---- uc3
+uc3 -[hidden]down---- uc4
+
+uc5 -[hidden]down- uc6
+uc6 -[hidden]down- uc7
+uc7 -[hidden]down- uc8
+uc8 -[hidden]down- uc9
+uc9 -[hidden]down- uc10
+uc10 -[hidden]down- uc11
+uc11 -[hidden]down- uc12
+uc12 -[hidden]down- uc13
+
+uc1_1 -[hidden]down- uc1_2
+uc1_2 -[hidden]down- uc1_3
+
+uc2_1 -[hidden]down- uc2_2
+uc2_2 -[hidden]down- uc2_3
+uc2_3 -[hidden]down- uc2_4
+
+uc3_1 -[hidden]down- uc3_2
+uc3_2 -[hidden]down- uc3_3
+uc3_3 -[hidden]down- uc3_4
+
+uc4_1 -[hidden]down- uc4_2
+uc4_2 -[hidden]down- uc4_3
+uc4_3 -[hidden]down- uc4_4
+
+uc1 - uc1_1
+uc1 - uc1_2
+uc1 - uc1_3
+
+uc2 - uc2_1
+uc2 - uc2_2
+uc2 - uc2_3
+uc2 - uc2_4
+
+uc3 -uc3_1
+uc3 -uc3_2
+uc3 -uc3_3
+uc3 -uc3_4
+
+uc4 -uc4_1
+uc4 -uc4_2
+uc4 -uc4_3
+uc4 -uc4_4
+
+
+@enduml

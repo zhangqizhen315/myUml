@@ -1,0 +1,88 @@
+@startuml
+
+title 简单的用户图
+
+:admin: as a
+note top of a: "用例图用于表示用户可以在什么地方做什么事情"
+:guest: as g
+(add)
+(update)
+(查询)
+(delete)
+
+a -> (add)
+a --> (update)
+a ---> (delete)
+a ----> (查询)
+g -> (查询)
+@enduml
+
+
+@startuml
+
+title 简单的类图
+
+class reader{
+    name
+    phone
+    address
+    read() 
+    borrow()
+}
+
+class book{
+    bookName
+    autor
+    price
+    pubishDate
+    isBorowed()
+}
+
+reader -> book
+
+@enduml
+
+@startuml
+title 类图例子2
+
+class person{
+    - age: int
+    - address: string
+    - name: string
+    - id: int
+    + changeString(name: string)
+    + incraseAge(): int
+}
+
+class Computer{
+    - model
+    - date
+    + userComputer():void
+}
+
+person -> Computer : 这是一个关联关系
+@enduml
+
+
+@startuml
+
+class parent
+
+class child1
+
+class child2
+
+child2 -left|> parent: 这是一个继承关系
+child1 -right|> parent: 注意方向别画反了
+@enduml
+
+@startuml
+
+object tom
+object dell
+object apple
+
+tom - dell
+tom - apple
+@enduml
+

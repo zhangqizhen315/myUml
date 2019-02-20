@@ -1,0 +1,648 @@
+@startuml
+scale 3
+title 01_钱包系统功能架构
+rectangle 钱包系统 {
+    rectangle app as view {
+        rectangle 创建地址 as v1
+        rectangle 导入地址 as v2
+        rectangle 转账 as v3
+        rectangle 资产列表 as v4
+        rectangle 交易记录 as v5
+
+        v1 -[hidden]right-> v2
+        v2 -[hidden]right-> v3
+        v3 -[hidden]right-> v4
+        v4 -[hidden]right-> v5
+    }
+    rectangle 控制层 as ctr {
+        rectangle 解析 as c1
+        rectangle 检查 as c2
+        rectangle 预警 as c3
+
+        c1 -[hidden]right-> c2
+        c2 -[hidden]right-> c3
+    }
+    rectangle 数据层 as data {
+        rectangle mysql {
+            rectangle 交易亡录表 {
+                rectangle NEO
+                rectangle ETH
+            }
+            rectangle UTXO表
+            rectangle 资产列表表
+            rectangle 活动表 {
+                rectangle 活动列表
+                rectangle 报名
+            }
+        }
+        rectangle blockchain {
+            rectangle NEO节点
+            rectangle ETH节点
+        }
+    }
+
+    view -[hidden]--> ctr
+    ctr -[hidden]--> data
+}
+@enduml
+
+@startuml
+scale 3
+title 02_创建钱包流程
+start
+:用户操作创建钱包;
+:钱包创建助记词;
+
+end
+
+@enduml
+
+@startuml
+scale 3
+title 03_创建钱包地址
+actor 用户 as user
+participant app
+participant SDK
+
+autonumber
+user -> app: 操作创建钱包
+activate app
+app -> SDK: 调用创建地址
+activate SDK
+SDK -> SDK: 生成公钥, 私钥, 助记词
+SDK --> app: 反回助记词
+deactivate SDK
+app --> user: 返回助记词
+deactivate app
+@enduml
+
+@startuml
+scale 3
+title 04_导入地址
+actor 用户 as user
+participant app
+participant SDK
+
+autonumber
+user -> app: 输入助记词
+activate app
+app -> SDK: 调用导入地址接口
+activate SDK
+SDK -> SDK: 验证/解析助记词
+SDK --> app: 返加地址
+deactivate
+app --> user: 显示地址
+deactivate app
+@enduml
+
+@startuml
+scale 3
+title 05_转账
+actor 用户 as user
+participant app
+participant SDK
+database blackChain
+database mysql
+
+autonumber
+user -> app: 输入金额, 确认交易
+activate app
+app -> SDK: 调用转账接口
+activate SDK
+SDK -> SDK: 判断余额
+SDK -> mysql: 查询 UTXO
+mysql --> SDK: 返回 UTXO 数组
+SDK -> SDK: 拼装 UTXO
+SDK -> blackChain: 发布交易
+blackChain --> SDK: 返回发布结果
+SDK --> app: 返回发布结果
+deactivate SDK
+deactivate app
+app -> blackChain: 查询交易记录
+activate app
+blackChain --> app: 查询结果
+deactivate app
+app -> mysql: 查询交易记录
+activate app
+mysql --> app: 查询结果
+deactivate app
+@enduml
+
+@startuml
+scale 3
+title 06_解析
+actor 用户 as user
+participant app 
+control 解析模块 as ctr
+database blockChain as bc
+database mysql as ms
+
+autonumber
+ctr -> bc: 查询新区块数据
+activate ctr
+bc --> ctr: 返回区块数据
+ctr -> ctr: 解析数据
+ctr -> ms: 存储数据
+ms --> ctr: 存储结果
+deactivate ctr
+user -> app: 查询用交易记录
+activate app
+app -> bc: 查询交易记录
+bc --> app: 返回结果
+app -> ms: 查询交易记录
+ms --> app: 查询交易记录
+@enduml
+
+@startuml
+scale 3
+title 07_活动流程
+start
+:1 在活动列表添加活动表;
+:2 显示在 app;
+:3 用户操作录入;
+:4 查询活动报名表;
+:5 筛选活动参于人, 并做快照;
+:6 发入 CPX;
+end
+@enduml
+
+@startuml
+scale 3
+title 08_表结构
+class c1 as "活动表" <c1>
+class c2 as "neo 高度表" <c2>
+class c4 as "以太坊高度表" <c4>
+class c6 as "活动详情表" <c6>
+rectangle 交易表 {
+class c3 as "以太坊交易记录" <c3>
+class c7 as "Neo 交易记录表" <c7>
+}
+class c8 as "账户余额表" <c8>
+rectangle 资产表{
+class c5 as "Neo 资产表" <c5>
+class c9 as "以太坊资产列表" <c9>
+}
+
+c1 : id
+c1 : begin_date[开始时间]
+c1 : body_cn[中文内容]
+c1 : body_en[英文内容]
+c1 : code[??]
+c1 : createTimestamp[创建时间戳]
+c1 : end_date[结束时间]
+c1 : gas_limit[??]
+c1 : imageurl[活动图片]
+c1 : modifyTimestamp[修改时间]
+c1 : newview_endtime[??]
+c1 : title_cn[中文标题]
+c1 : title_en[英文标题]
+c1 : <font color=red><b>快照时间
+c1 : <font color=red><b>公链类型
+c1 : <font color=red><b>活动分级标准
+c1 : <font color=red><b>状态
+c1 : <font color=red><b>活动发放池
+
+c2 : id
+c2 : current_count[高度]
+c2 : type[??]
+
+c9 : id
+c9 : asset_id[资产id]
+c9 : avaiable[??]
+c9 : decimal[进制]
+c9 : image[图片]
+c9 : name[名称]
+c9 : priority[优先级]
+c9 : symbol[符号]
+c9 : type[??]
+
+c3 : id
+c3 : asset_id[资产 id]
+c3 : block_number[区块号]
+c3 : create_timestamp[创建时间戳]
+c3 : from[发送方]
+c3 : gas[手续费]
+c3 : gas_price[手续费价格]
+c3 : nonce[???]
+c3 : to[接收方]
+c3 : txid[交易流水??]
+c3 : type[??]
+c3 : value[金额]
+
+c4 : id
+c4 : current_countp[高度]
+c4 : type[??]
+
+c5 : id
+c5 : available[??]
+c5 : image[资产图标]
+c5 : name[资产名称]
+c5 : decimal[进制]
+c5 : priority[优先级]
+c5 : symbol[符号]
+c5 : type[??]
+
+c6 : id
+c6 : activityId[活动id]
+c6 : chainType[公链类型]
+c6 : createTimstamp[创建时间]
+c6 : hashAddress[地址]
+c6 : modifyTimestamp[修改时间]
+c6 : batchNo[批次]
+c6 : <font color=red><b>余额
+c6 : <font color=red><b>余额查询时间
+c6 : <font color=red><b>快照余额
+c6 : <font color=red><b>分级
+c6 : <font color=red><b>发放交易流水
+c6 : <font color=red><b>状态
+
+c7 : txid[交易id]
+c7 : n[??]
+c7 : type[??]
+c7 : asset_id[资产列表]
+c7 : from[发送方]
+c7 : to[接收方]
+c7 : value[金额]
+c7 : gas_consumed[??]
+c7 : vmstate[??]
+c7 : block[区块号]
+c7 : inserted_at[??]
+c7 : updated_at[??]
+
+c8 : n[??]
+c8 : txid[交易id]
+c8 : address[地址]
+c8 : asset[资产]
+c8 : block[??]
+c8 : createTime[创建时间??]
+c8 : gas[??]
+c8 : is_spent[??]
+c8 : spentTime[??]
+c8 : value[值]
+
+c1 -> c6
+c6 --- c5
+c6 --- c9
+c6 - c3
+c6 - c7
+c3 -[hidden]down- c7
+c8 -- c6
+@enduml
+
+@startuml
+scale 3
+title 09_后台用例
+actor 后台管理员 as admin
+rectangle 钱包后台 {
+    together {
+        usecase "uc1 登录" as uc1
+        together {
+            usecase "uc2 活动管理" as uc2
+            together {
+                usecase "uc2_1 活动列表" as uc2_1
+                usecase "uc2_2 添加活动" as uc2_2
+                usecase "uc2_3 修改活动" as uc2_3
+                usecase "uc2_4 活动详情" as uc2_4
+                usecase "uc2_5 活动快照" as uc2_5
+                usecase "uc2_6 活动执行" as uc2_6
+            }
+        }
+        together {
+            usecase "uc3 用户管理" as uc3
+            together {
+                usecase "uc3_1 用户资产" as uc3_1
+            }
+        }
+        usecase "uc4 资产管理" as uc4
+    }
+}
+
+admin -> uc1
+admin -> uc2
+admin -> uc3
+admin -> uc4
+
+uc2 -> uc2_1
+uc2 -> uc2_2
+uc2 -> uc2_3
+uc2 -> uc2_4
+uc2 -> uc2_5
+uc2 -> uc2_6
+
+uc3 -left-> uc3_1
+
+uc2_1 -[hidden]down- uc2_2
+uc2_2 -[hidden]down- uc2_3
+uc2_3 -[hidden]down- uc2_4
+uc2_4 -[hidden]down- uc2_5
+uc2_5 -[hidden]down- uc2_6
+uc2 -[hidden]down- uc2_3
+
+uc2_6 -[hidden]down- uc3_1
+
+
+
+uc1 -[hidden]down- uc2
+uc2 -[hidden]down- uc3
+uc3 -[hidden]down- uc4
+@enduml
+
+@startuml
+scale 3
+title uc1登录时序图
+actor "后台管理员" as adm
+participant "web" as web
+participant "server" as se
+
+autonumber
+adm -> web: 输入用户名, 密码, 点击登录
+activate adm
+    web -> se: 传入用户输入内容请求进行用户验证
+    activate web
+        se -> se: 验证用户信息
+        activate se
+            se --> web: 返回验证结果
+        deactivate se
+        web --> adm: 显示登录结果
+    deactivate web
+deactivate adm
+@enduml
+
+@startuml
+scale 3
+title uc1用户登录流程图
+start
+:用户进入登录页面;
+repeat
+:用户输入用户名密码;
+:系统判断用户输入是否正确;
+if (用户输入内容) then (正确)
+:用户登录成功;
+:跳转后台首页;
+end
+else (不正确)
+:提示用户登录失败;
+:重新进入登录页面;
+endif
+repeat while
+@enduml
+
+@startuml
+scale 3
+title uc2活动管理流程图
+|管理员|
+start
+:管理员创建活动;
+|用户|
+|系统|
+:创建活动;
+|管理员|
+if (是否修改活动) then (是)
+:修改活动;
+|系统|
+:修改活动;
+endif
+|管理员|
+:发布活动;
+|系统|
+:在前端显示该活动;
+while (快照时间是否达到) is (没达到)
+:收集地址;
+|用户|
+:参于活动, 输入地址;
+|系统|
+:创建活动详情;
+end while
+:制作快照;
+:在前端显示快照制作完成;
+:显示活动统计;
+|管理员|
+:发放奖励;
+|系统|
+:发放奖励;
+|用户|
+:收到奖励;
+|管理员|
+:检查活动发放结果;
+end
+
+@enduml
+
+@startuml
+scale 3
+title uc2_2添加活动时序图
+actor "管理员" as adm
+participant web
+participant server
+database 活动表 as db
+
+autonumber
+adm -> web: 输入活动详请
+    activate web
+    web -> server: 传入活动数据
+        server -> db: 保存活动数据
+        activate server
+        activate db
+            db --> server: 返回存储结果
+        deactivate db
+        server --> web: 返回活动详情页面
+        deactivate server
+deactivate
+@enduml
+
+@startuml
+scale 3
+title uc2_3修改活动时序图
+actor 管理员 as adm
+participant web
+participant server as se
+database 活动表 as db
+
+autonumber
+adm -> web: 修改活动信息
+    web -> se: 提交修改
+    activate web
+        activate se
+            se -> db: 保存修改信息
+            activate db
+                db --> se: 返回保存结果
+            deactivate db
+            se --> web: 返回活动信息页面
+        deactivate se 
+@enduml
+
+@startuml
+scale 3
+title c1活动状态机
+state "创建" as s1
+state "发布" as s2
+state "快照" as s3
+state "发放" as s4
+
+[*] --> s1: 管理员创建活动
+s1 --> s1: 修改活动
+s1 --> s2: 发布活动
+s2 --> s3: 制作快照
+s3 --> s4: 发放奖励
+s4 --> [*]: 活动结束
+
+s1: 后台生成活动数据
+s2: 活动显示在前端 app 中
+s3: 前端 app 显示快照已制作
+s4: 前端显示奖励已发放
+@enduml
+
+@startuml
+scale 3
+title 用户参加活动时序图
+actor 管理员 as adm
+actor 用户 as user
+participant app
+participant web
+participant server as se
+database 活动表 as hd
+database 详情表 as xq
+
+autonumber
+adm -> web: 发布活动
+    activate web
+    web -> se: 提交活动
+        activate se
+        se -> hd: 读取活动数据
+            activate hd
+                hd --> se: 返回活动数据
+            deactivate hd
+                se --> web: 显示活动发布成功
+    deactivate web
+                se --> app: 显示活动页面
+        deactivate se
+user -> app: 参于活动, 输入用户参于活动的地址
+    activate app
+    app -> se: 提交用户输用地址
+        activate se
+        se -> xq: 存储用户输用信息
+            activate xq
+            xq --> se: 存储结果
+            deactivate xq
+        se --> app: 显示提示用户参加活动成功页面
+        deactivate se
+    deactivate
+@enduml
+
+@startuml
+scale 3
+title uc2_5活动快照流程图
+start
+:管理员开始活动统计;
+:从活动详请表中查出参加本次活动的地址;
+repeat
+partition 查询余额 {
+:根据地址及公链类型查询相应用户余额;
+:记录用户余额及查询时间;
+}
+partition 查询交易记录 {
+:根据地址及公链类型查询相应的交易表;
+:查询从快照时间点至该用户余额查询时间点之间, form 字段为该地址的所有 value 的和;
+:查询从快照时间点至该用户余额查询时间点之间, to 字段为该地址的所有 value 的和;
+}
+partition 建立快照 {
+:计算快照时间点的用户余额;
+:记入活动快照表;
+}
+if (是否还有未建立快照的地址) then (没有了)
+end
+else (还有)
+endif
+repeat while (查询一下个地址)
+@enduml
+
+@startuml
+scale 3
+title uc2_5活动快照时序图
+actor 管理员 as adm
+participant web
+participant sever as se
+database 活动详情表 as xq
+database 用户余额表 as ye
+database 交易记录表 as jl
+database 活动快照表 as kz
+
+autonumber
+adm -> web: 开始活动统计
+activate web
+    web -> se: 提交活动统计请求
+    activate se
+        se -> xq: 查询参加活动的地址
+        activate xq
+            xq --> se: 参加活动的地址
+        deactivate xq
+        loop 还有未建立快照的地址
+            se -> ye: 查询该地址余额
+            activate se
+            activate ye
+                ye -> se: 返回该地址余额     
+            deactivate ye
+            se -> se: 记录该址余额及查询余额时间
+            se -> jl: 查询快照时间点到查询余额时间点之间, from 字段为该地址的 value 之和
+            activate jl
+                jl --> se: 返回 value 之和
+            deactivate jl
+            se -> jl: 查询快照时间点到查询余额时间点之间, to 字段为该地址的 value 之和
+            activate jl
+                jl --> se: 返回 value 之和
+            deactivate jl
+            se -> se: 计算快照时间点用户的该地址余额
+            se -> kz: 保存快照时间点该地址余额
+            activate kz
+                kz --> se: 返回保存结果
+            deactivate kz
+            deactivate se
+        end
+        se -> kz: 本次活动的快照
+        activate kz
+            kz --> se: 返回本次活动的快照
+        deactivate kz
+        se --> web: 生成本次活动的快照表
+    deactivate se
+deactivate web
+left footer 
+<font color=red><b>传递参数
+<font color=red><b>2</b></font>: 活动id, 活动
+这是另一个脚注
+endfooter
+@enduml
+
+@startuml
+scale 3
+title uc2_6活动执行流程图
+start
+partition 发放前准备 {
+    :管理员输入 cpx 发放标准;
+    :系统对快照数据进行分类;
+    :统计各分类所需发放的 cpx 数及所需 cpx 总数;
+    :创建活动 cpx 发放地址;
+    :向活动 cpx 发放地址存入所需 cpx;
+}
+partition 发放cpx {
+    :逐级发放 cpx ;
+    :统计发放结果;
+    :检查发放结果;
+}
+end
+@enduml
+
+@startuml
+scale 3
+title uc2_6活动执行时序图
+actor 管理员 as adm
+participant web 
+participant sever as se 
+database 活动快照表 as kz
+database 活动结果表 as jg
+@enduml
+
+@startuml
+object a
+object b
+a -> b: test
+@enduml

@@ -1,0 +1,166 @@
+@startuml
+title 时序图的基本例子
+Alice -> Bob: 身份认证请求
+Bob --> Alice: 身份认证响应
+
+Alice -> Bob: 另一个身份谁请求
+Alice <-- Bob: 另一个认证响应
+@endUML
+
+@startuml
+title 声明参与者
+actor foo1
+boundary foo2
+control foo3
+entity foo4
+database foo5
+collections foo6
+
+
+foo1 -> foo2 : 传递给边界
+foo1 -> foo3 : 传递给控制器
+foo1 -> foo4 : 传递给实体
+foo1 -> foo5 : 传递给数据库
+foo1 -> foo6 : 传递给集合
+@enduml
+
+
+@startuml
+participant Alice
+participant "the **Famous** Bob" as Bob
+
+Alice -> Bob: hello --there--
+...some ~~long dalay~~ ...
+Bob -> Alice: ok
+note left
+This is **bold**
+这是 //斜体//
+这是 ""什么""
+这是 --删除线--
+这是 __下划线__
+这是 ~~波浪线~~
+
+end note
+@endUML
+
+@startuml
+actor user
+
+user -> a: do work
+activate a
+
+a --> b: <<创建链接>>
+activate b
+b -> c: do work
+activate c
+c -> b: work done
+destroy c
+
+b -> a: 关闭链接
+deactivate b
+a -> user: 工作完成了
+deactivate a
+@enduml
+
+@startuml
+actor user
+
+user -> A: some text
+activate A #red
+A -> A: some text
+activate A #yellow
+
+A -> B: some text
+deactivate A
+activate B
+
+B -> A: some text
+deactivate B
+
+A -> user: some text
+deactivate A
+@endUML
+
+@startuml
+actor Alice
+participant Bob
+
+Alice -> Bob: hellow
+create C
+Alice -> C: Ok
+create control string
+C -> string:hi
+@enduml
+
+@startUML
+participant A
+[-> A: Some thing
+A -> A: Ok
+A ->]: some thing
+@endUML
+
+@startuml
+participant Alice << (C, #added2) class>>
+@endUML
+
+@startuml
+hide footbox
+box "系统A" #yellow
+participant A
+participant B
+end box
+participant C
+
+A -> B: some text
+B -> C: some text
+
+@endUML
+
+@startUML
+title 这是一个简单的用例图
+(usercase)
+usecase (这是一个用例) as uc1
+actor 用户 as man
+man -> uc1
+man --> (usercase)
+@endUML
+
+@startUML
+actor 管理员 as admin
+actor 用户 as user
+
+rectangle 系统 {
+    user -- (注册会员)
+    admin -- (审核会员)
+    (审核会员) -right-> (注册成功)
+    (注册会员) -left-> (注册成功)
+    (注册成功) -down-> (do some thing)
+}
+@endUML
+
+@startUML
+package 这是一个包 {
+    class "这是一个类" as c1 {
+        + 这是一些属性
+        - 这是一些动作()   
+    }
+
+    class "这是另一个类" as c2 {
+
+    }
+
+}
+c1 -|> c2
+@endUML
+
+@startUML
+start
+:这是第一步;
+:这是第二步;
+if (这是一个判断) then (如果为真)
+:恩, 是真的哦;
+stop
+else (如果为假)
+:哦, 是假的啊;
+stop
+@endUML

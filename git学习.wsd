@@ -1,0 +1,211 @@
+@startUML
+scale 3
+title 安装git
+start
+:git一下看看是不是已安装git;
+note left
+    命令行里输入 git 试一下
+end note
+if () then (未安装)
+    partition 安装git {
+        if (ubuntu)
+            if (版本是否较早) then (是)
+                :sudo apt-get install git;
+            else (否)
+                :sudo apt-get install git-core;
+            endif
+        elseif (contos)
+            :yum -y install git;
+        elseif (OS X)
+
+            :安装 homebrew, 通过 homebrew 安装 Git;
+        else (windows)
+            :从官网直接下载安装;
+        endIF
+        }
+    endif
+    partition 身份设置 {
+    :git config --global user.name "You Name";
+    :git config --global user.email "You Email";
+}
+note left
+    设置用户名及设置用户 email
+end note
+stop
+@endUML
+
+@startUML
+scale 3
+title 创建版本库
+start
+partition 初始化git仓库 {
+    :git init;
+}
+partition 添加文件到git仓库 {
+    :git add <file>;
+    note left
+        将文件添加到暂存区
+    end note
+    :git status;
+    note left
+        看一下工作区状态
+    end note
+    :git commit -m;
+    note left
+        -m 选项指定添加备注信息
+    end note
+}
+stop
+@endUML
+
+@startUML
+scale 3
+title 版本管理
+start
+repeat
+    :do some thing;
+    note left
+        修改工作区文件
+    end note
+    if (是否保存) then (否)
+        :git checkout -- file;
+        note left
+            放弃工作区
+        end note
+    else (是)
+        :git add;
+        note left
+            提交工作区到暂存区
+        end note
+    endif
+repeat while (可以多次添加)
+if (是否保存) then (否)
+    :git reset HEAD file;
+    note left
+        放弃暂存区
+    end note
+else (是)
+    :git commit -m;
+    note left
+        提交暂存区到仓库
+    end note
+endif
+if (删除某文件)
+    :rm file;
+    :git rm file;
+    note left
+        从仓库删除某文件
+    end note
+endif
+fork
+    :git log;
+    note left
+        查看日志
+    end note
+fork again
+    :git relog;
+    note left
+        查看操作日志
+    end note
+end fork
+fork
+    :git reset --hard HEAD^/HEAD^n;
+    note left
+        返回到上几个版本
+    end note
+fork again
+    :git reset --hard <hash 前 n 位唯一值> ;
+    note left
+        返回到某 hash 值的版本
+    end note
+end fork
+stop
+@endUML
+
+
+@startUML
+scale 3
+title 远程仓库
+start
+partition 搭建git服务器 {
+    :在服务器上下载 git ;
+    :创建 git 用户;
+    :修改 git 用户 shell 使其不能通过 shell 登录;
+    :在 /home/git/.ssh/autorized_keys 内添加使用者的 id_rsa.pub;
+    :初始化 git 仓库;
+}
+fork
+    partition 克隆远程仓库 {
+        :git clone git@server:/仓库/的路径;
+    }
+fork again
+    partition 关联到远程仓库 {
+        :git remote add origin git@server:/仓库/的路径;
+    }
+end fork
+partition 推送修改 {
+    :git push -u origin master;
+}
+stop
+@endUML
+
+@startUML
+scale 3
+title 分支管理
+start
+:git branch;
+note left
+    查看分支
+end note
+fork
+    :git branch <name>;
+    note left
+        创建分支
+    end note
+    :git checkout <name>;
+    note left
+        检出分支 (切换到该分支)
+    end note
+fork again
+    :git checkout -b <name>;
+    note left
+        创建并检出该分支
+    end note
+end fork
+:git merge <name> ;
+note left
+    合并分支
+end note
+:git branch -d <name> ;
+note left
+    删除分支
+end note
+stop
+@endUML
+
+@startUML
+scale 3
+title 标签管理
+start
+:创建标签;
+fork
+    :git tag <name> ;
+fork again
+    :git tag <name> commitId;
+fork again
+    :git tag -a <tagname> -m "blablalba";
+end fork
+:推送远程标签;
+fork
+    :git push origin <tagname>;
+fork again
+    :git push origin --tags;
+end fork
+:删除标签;
+fork
+    :git tag -d <tagname>;
+fork again
+    :git pushi origin :refs/tags/<tagname>;
+end fork
+stop
+@endUML

@@ -1,0 +1,8 @@
+@startuml
+' 这是一个顺序图的简单示例
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+
+Alice -> Bob: 这是一个传递
+Bob --> Alice: 这是返回的消息
+@enduml

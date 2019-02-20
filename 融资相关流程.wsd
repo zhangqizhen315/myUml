@@ -1,0 +1,24 @@
+@startuml
+scale 3
+title 融资相关流程
+start
+fork
+:金融机构配置项目偏好;
+fork again
+:供求用户下单;
+:供求用户选择使用融资支付尾款;
+end fork
+if (发布项目是否符合金融机构的偏好) then (是)
+fork
+:推荐用户向金融机构发起融资;
+fork again
+:推荐金融机构投资用户发起的标的;
+end fork
+else (否)
+endif
+:在相应行业的融资列表中显示标的;
+:金融机构投资;
+:供求用户完成订单;
+:供求用户还本付息;
+end
+@enduml

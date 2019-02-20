@@ -1,0 +1,23 @@
+@startuml
+title 简单流程图
+(*) --> "第一个动作"
+"第一个动作" --> (*)
+@enduml
+
+@startuml
+title 描述联接线
+(*) --> "第一个动作"
+--> [这是对于联接关系的描述] "第二个动作"
+--> (*)
+@enduml
+
+@startuml
+(*) --> if "一些测试" then
+--> [true] "动作一"
+if "" then
+-> "动作三" as a3
+else
+if "其他测试" then
+-left-> "动作五"
+@enduml
+

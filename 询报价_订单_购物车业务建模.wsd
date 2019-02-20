@@ -1,0 +1,445 @@
+@startUML
+scale 3
+title 用例
+(询报价) as uc001
+
+@endUML
+
+@startUML
+scale 3
+title 类图
+class cl001 as "供求用户" <cl001>
+
+class cl004 as "商品" <cl004>
+class cl005 as "待购商品" <cl005>
+
+class cl006 as "求购信息" <cl006>
+class cl007 as "出售信息" <cl007>
+
+class cl008 as "订单" <cl008>
+
+class cl009 as "报价" <cl009>
+class cl010 as "询价" <cl010>
+
+class cl011 as "购物车" <cl011>
+
+cl001 : 发布求购信息()
+cl001 : 发布出售信息()
+cl001 : 下单()
+cl001 : 加入购物车()
+
+cl004 : 创建商品()
+
+cl005 : 查询待购商品()
+cl005 : 创建()
+cl005 : 更新()
+
+cl006 : 商品id
+cl006 : 发起报价()
+cl006 : 创建求购信息()
+
+cl007 : 商品id
+cl007 : 发起询价()
+cl007 : 创建出售信息()
+
+cl008 : 创建订单()
+
+cl009 : 获取求购信息()
+cl009 : 创建待购商品()
+cl009 : 查询买方最后信息()
+cl009 : 查询报价信息()
+cl009 : 创建报价()
+cl009 : 发送报价()
+cl009 : 成交()
+
+cl010 : 获取出售信息()
+cl010 : 创建待购商品()
+cl010 : 查询询价()
+cl010 : 创建询价()
+cl010 : 下单()
+
+cl011 : 添加购物车()
+cl011 : 发起询价()
+
+cl001 --> cl006: 发布 >
+cl001 --> cl007: 发布 >
+cl006 *-- cl004: 包含 >
+cl007 *-- cl004: 包含 >
+
+cl010 <- cl007: 发起 <
+cl006 -> cl009: 发起 >
+
+cl010 -----> cl005: 更新 >
+cl009 -----> cl005: 更新 >
+
+cl004 <|-- cl005: 继承
+
+cl008 <- cl010: 生成 <
+
+cl008 *-- cl005: 包含 >
+
+cl011 *- cl005: 包含 >
+cl008 <-- cl011: 下单 <
+cl010 <--- cl011: 发起 <
+@endUML
+
+@startUML
+scale 3
+title 发布出售信息
+actor 供求用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 供求用户 as c_user
+participant 商品 as sp
+participant 出售信息 as cs
+end box
+
+autoNumber
+user -> sys: 发布出售信息
+activate sys
+sys -> c_user: 发布出售信息()
+activate c_user
+c_user -> sp: 创建商品()
+activate sp
+sp --> c_user: 返回消息: 创建商品成功
+deactivate sp
+c_user -> cs: 创建出售信息()
+activate cs
+cs --> c_user: 返回消息: 创建出售信息成功
+deactivate cs
+c_user --> sys: 返回消息: 发布成功
+deactivate c_user
+sys --> user: 提示: 出售信息发布成功
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 发布求购信息
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 用户 as c_user
+participant 商品 as sp
+participant 求购信息 as qg
+end box
+
+autoNumber
+user -> sys: 发布求购信息
+activate sys
+sys -> c_user: 发布求购信息()
+activate c_user
+c_user -> sp: 创建商品()
+activate sp
+sp --> c_user: 返回消息: 创建商品成功
+deactivate sp
+c_user -> qg: 创建求购信息()
+activate qg
+qg --> c_user: 返回消息: 创建求购信息成功
+deactivate qg
+c_user --> sys: 返回消息: 发布求购信息成功
+deactivate user
+sys --> user: 提示: 发布求购信息成功
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 创建询价
+actor 用户 as buyer
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 出售信息 as cs
+participant 询价 as lt
+participant 待购商品 as dg
+end box
+
+autoNumber
+buyer -> sys: 发起询价
+activate sys
+sys -> cs: 发起询价()
+activate cs
+cs -> lt: 查询询价()
+activate lt
+lt --> cs: 返回信息: 询价不存在()
+deactivate lt
+cs -> lt: 创建询价()
+activate lt
+lt --> cs: 返回信息: 询价信息
+deactivate lt
+cs -> dg: 创建待购商品()
+activate dg
+dg --> cs:返回消息: 待购商品信息
+deactivate dg
+cs --> sys: 返回信息: 询价信息
+deactivate cs
+sys --> buyer: 打开聊天窗口
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 打开询价
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 出售信息 as cs
+participant 询价 as lt
+participant 待购商品 as dg
+end box
+
+autoNumber
+user -> sys: 发起询价
+activate sys
+sys -> cs: 发起询价()
+activate cs
+cs -> lt: 查询询价信息()
+activate lt
+lt --> cs: 返回信息: 询价信息
+deactivate lt
+cs -> dg: 创建待购商品()
+activate dg
+dg --> cs: 返回信息: 待购商品
+deactivate dg
+cs --> sys: 返回消息: 询价信息
+deactivate cs
+sys --> user: 打开聊天窗口
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 创建报价
+actor 用户 as buyer
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 求购信息 as cs
+participant 报价 as lt
+participant 待购商品 as dg
+end box
+
+autoNumber
+buyer -> sys: 发起报价
+activate sys
+sys -> cs: 发起报价()
+activate cs
+cs -> lt: 查询报价()
+activate lt
+lt --> cs: 返回信息: 报价不存在()
+deactivate lt
+cs -> lt: 创建报价()
+activate lt
+lt --> cs: 返回信息: 报价信息()
+deactivate lt
+cs -> dg: 创建待购商品()
+activate dg
+dg --> cs:返回消息: 待购商品信息
+deactivate dg
+cs --> sys: 返回信息: 报价信息
+deactivate cs
+sys --> buyer: 打开报价
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 打开报价
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 出售信息 as cs
+participant 报价 as lt
+participant 待购商品 as dg
+end box
+
+autoNumber
+user -> sys: 发起报价
+activate sys
+sys -> cs: 发起报价()
+activate cs
+cs -> lt: 查询报价信息()
+activate lt
+lt --> cs: 返回信息: 报价信息
+deactivate lt
+cs -> dg: 创建待购商品()
+activate dg
+dg --> cs: 返回信息: 待购商品
+deactivate dg
+cs --> sys: 返回消息: 报价信息
+deactivate cs
+sys --> user: 打开报价
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 发送价格
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 报价 as lt
+participant 待购商品 as dg
+end box
+
+autoNumber
+user -> sys: 发送报价
+activate sys
+sys -> lt: 发送价格()
+activate lt
+lt -> dg: 更新()
+activate dg
+dg --> lt: 返回消息: 更新成功
+deactivate dg
+lt --> sys: 返回消息: 报价成功
+deactivate lt
+sys --> user: 显示新报价及更新的待购商品信息
+deactivate sys
+@endUML
+
+@startUMl
+scale 3
+title 成交询价
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 报价 as lt
+participant 待购商品 as dg
+end box
+
+autoNumber
+user -> sys: 成交
+activate sys
+sys -> lt: 成交()
+activate lt
+lt -> lt: 查询买方最后信息()
+activate lt
+lt -> dg: 更新()
+deactivate lt
+activate dg
+dg --> lt: 返回信息: 更新成功
+deactivate dg
+lt --> sys: 返回信息: 待购商品信息
+deactivate lt
+sys --> user: 更新待购商品信息
+deactivate sys
+@endUML
+
+@startUMl
+scale 3
+title 买方下单
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 询价 as c_user
+participant 待购商品 as dg
+participant 订单 as dd
+end box
+
+autoNumber
+user -> sys: 下单
+activate sys
+sys -> c_user: 下单()
+activate c_user
+c_user -> dg: 下单()
+activate dg
+dg -> dd: 创建订单()
+activate dd
+dd --> dg: 返回消息: 订单详情
+deactivate dd
+dg --> c_user: 返回消息: 订单详情
+deactivate dg
+c_user --> sys: 返回消息: 订单详情
+deactivate c_user
+sys --> user: 提示下单成功, 跳转订单页面
+deactivate sys
+@endUML
+
+@startUMl
+scale 3
+title 加入购物车
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 用户 as c_user
+participant 待购商品 as dg
+participant 购物车 as gwc
+end box
+
+autoNumber
+user -> sys: 加入购物车
+activate sys
+sys -> c_user: 加入购物车()
+activate c_user
+c_user -> dg: 查询待购商品()
+activate dg
+dg --> c_user: 返回消息: 待购商品信息
+deactivate dg
+c_user -> gwc: 添加购物车()
+activate gwc
+gwc --> c_user: 返回消息: 添加购物车成功
+deactivate gwc
+c_user --> sys: 返回消息: 加入购物车成功
+deactivate c_user
+sys --> user: 提示加入购物车成功, 跳转购物车页面
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 通过购物车发起聊天
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 购物车 as gwc
+participant 买方聊天 as lt
+participant 待购商品 as dg
+end box 
+
+autoNumber
+user -> sys: 从购物车发起聊天
+activate sys
+sys -> gwc: 发起聊天
+activate gwc
+gwc -> lt: 查询聊天()
+activate lt
+lt --> gwc: 返回信息: 聊天信息
+deactivate lt
+gwc -> dg: 创建待购商品()
+activate dg
+dg --> gwc: 返回消息: 待购商品信息
+deactivate dg
+gwc --> sys: 返回消息: 聊天信息
+deactivate gwc
+sys --> user: 打开买方聊天
+deactivate sys
+@endUML
+
+@startUMl
+scale 3
+title 通过购物车下单
+actor 用户 as user
+box "供应链金融系统"
+participant 供应链金融系统 as sys
+participant 购物车 as gwc
+participant 待购商品 as dg
+participant 订单 as dd
+end box
+
+autoNumber
+user -> sys: 通过购物车下单
+activate sys
+sys -> gwc: 下单()
+activate gwc
+gwc -> dg: 下单()
+activate dg
+dg -> dd: 创建订单()
+activate dd
+dd --> dg: 返回消息: 订单详情
+deactivate dd
+dg --> gwc: 返回消息: 订单详情
+deactivate dg
+gwc --> sys: 返回消息: 订单详情
+deactivate gwc
+sys --> user: 提示下单成功
+deactivate sys
+@endUML

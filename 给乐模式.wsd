@@ -1,0 +1,13 @@
+@startUML
+title 给乐模式
+participant 用户 as c
+participant 商户 as b
+participant 给乐 as g
+
+autonumber
+g -> b: 提供发放积分后台
+b -> b: 设置返乐豆规则
+c -> b: 消费
+g -> c: 返乐豆
+c -> g: 使用乐豆消费
+@endUML

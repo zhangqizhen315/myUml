@@ -1,0 +1,153 @@
+@startuML
+scale 3
+title 用户入驻
+start
+:管理员录入用户;
+fork
+while (实名认证) is (未通过)
+:修改实名信息;
+end while(通过) 
+:授信;
+fork again
+while (资金认证) is (未通过)
+:修改资金信息;
+end while(通过)
+:授信;
+fork again
+:添加银行卡;
+while (银行卡信息认证) is (未通过)
+:修改银行卡信息;
+end while(通过)
+:授信;
+fork again
+:中信开卡;
+if (认证是否通过) then (否)
+end
+else (是)
+:授信;
+endif
+end fork
+fork
+:重置密码;
+fork again 
+:禁用;
+fork again
+:编辑用户;
+end fork
+stop
+@endUML
+
+@startUML
+scale 3
+title 快速发布
+start
+:快速发布;
+fork
+repeat
+:发布出售信息;
+repeat while(发布结果) is (失败)
+-> 成功;
+fork again
+repeat
+:发布求购信息;
+repeat while(发布结果) is (失败)
+-> 成功;
+end fork
+while (商品审核) is (未通过)
+:修改商品信息;
+endwhile (通过)
+:商品上架;
+fork
+:商品编辑;
+fork again
+:商品下架;
+fork again
+:商品删除;
+end fork
+:售完;
+stop
+@endUML
+
+@startUML
+scale 3
+title 询报价流程
+start
+:用户发起询报价聊天;
+if (聊天类型) then (询价聊天)
+:在成交下单区设置下单价格为初始价格, 下单数量为 1;
+else (报价聊天)
+:成成交下单区设置成效价格为初始价格, 下单数量为剩余数量;
+endif
+repeat
+if (买方是否下单) then (是)
+:生成订单, 订单价格为下单区的下单价格, 下单数量为下单区下单数量;
+end
+elseif (卖方是否成交) then (是)
+:更新对方下单区的下单价格为成交价格, 下单数量为成交数量;
+elseif (卖方发送) then (是)
+:更新对对方下单区的下单价格为发送价格, 下单数量为发送数量;
+else (买方发送)
+:更新对方成交区的成交价格为发送价格, 成交数量发送数量;
+endif
+@endUML
+
+@startUML
+scale 3
+title 完成订单流程
+start
+:卖方提醒支付定金;
+if (买方是否及时支付定金) then (否)
+:联系客服;
+else (是)
+endif
+:买方支付定金;
+:买方提醒支付尾款;
+if (买方是否及时支付定金) then (否)
+:联系客服;
+else (是)
+endif
+if (支付方式) then (现金支付)
+:支付尾款;
+else (融资支付)
+:发起融资;
+:审核标的;
+if (审核是否通过) then (未通过)
+end
+else (通过)
+endif
+endif
+:提醒发货;
+if (发货是否超时) then (是)
+:联系客服;
+else (否)
+endif
+:卖方发货;
+:提醒验收;
+if (验收是否超时) then (是)
+:联系客户;
+else (否)
+endif
+:买方验收;
+stop
+@endUML
+
+@startUML
+scale 3
+title 投资流程
+start
+while (标的是否满标) is (否)
+:融资用户投资;
+endwhile
+-> 满标;
+:生成还款计划;
+repeat
+if (是否逾期) then (是)
+:计算逾期利息;
+else (否)
+endif
+:供求用户还款;
+repeat while (是否还完本息) is (否)
+-> 是;
+:还款成功;
+stop
+@endUML

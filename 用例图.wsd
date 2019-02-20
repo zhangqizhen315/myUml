@@ -1,0 +1,76 @@
+@startuml
+title 简单用例图
+(第一个用例)
+(另一个用例) as UC2
+usecase 第三个用例
+usecase (最后一个 \n用例) as uc3
+@enduml
+
+@startuml
+title 用例中的参与人
+:第一个参与者:
+:别一个 \n 参与者: as Man1
+actor man3
+actor 最后一个参与者 as man4
+@enduml
+
+@startuml
+title 多文本用例
+usecase UC3 as "你可以使用
+你的用例服务
+你了可以用其他的
+---
+说的什么玩意？？
+==
+并且你可以...
+..分割线..
+这是一个很长的用例"
+@enduml
+
+@startuml
+title 用户关联用例
+用户 -> (开始)
+用户 --> (一个小标签): 这也是一个关
+用户2 ---> (一个小标签): 这是一个关联
+@enduml
+
+@startuml
+:主要的管理员: as admin
+(用户的管理) as (use)
+
+user <|-- admin
+(开始) <|-- (use)
+@enduml
+
+@startuml
+title 用例标签
+:主要管理员: as admin
+(用户管理) as (use)
+
+user -> (start)
+user --> (use)
+admin ---> (use)
+
+note left of admin : 这是一个例子
+note right of (use)
+也是一个标签
+是一另一行
+end note
+
+note "这是一个 \n 服务中间的标签" as N2
+(start) .. N2
+N2 .. (use)
+@enduml
+
+
+@startuml
+left to right direction
+actor 商家
+actor 用户
+rectangle 系统 {
+    商家 -- (消费)
+    (消费) .> (支付)
+    (取消) .> (消费)
+    (消费) -- 用户
+}
+@enduml

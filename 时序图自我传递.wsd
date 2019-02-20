@@ -1,0 +1,8 @@
+@startUML
+participant Alice as a 
+participant Bob as b
+
+a -> b: 传递一个消息
+b -> b: 完成一个动作
+b --> a: 返回执行结果
+@endUML

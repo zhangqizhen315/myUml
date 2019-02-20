@@ -1,0 +1,242 @@
+@startUML
+title 整体用例图
+actor 报修人员 as user_b
+actor 维修人员 as user_w
+actor 后台管理员 as admin
+rectangle 微信小程序 {
+    left to right direction
+    usecase 报修 as uc_a1
+    usecase 接单 as uc_a2
+    usecase 提请验收 as uc_a3
+    usecase 验收 as uc_a4
+    usecase 提请结款 as uc_a5
+    usecase 查看订单 as uc_a6
+    
+}
+rectangle 后台 {
+    top to bottom direction
+    usecase 查看报修订单 as uc_b1
+    usecase 生成维修订单 as uc_b2
+    usecase 推送维修订单 as uc_b3
+    usecase 查看维修订单 as uc_b4
+    usecase 结款 as uc_b5
+    usecase 维护报修人员信息 as uc_b6
+    usecase 维护维修人员信息 as uc_b7
+}
+user_b -down-> uc_a1
+user_b -down-> uc_a4
+user_b -down-> uc_a6
+
+user_w -up-> uc_a2
+user_w -up-> uc_a3
+user_w -up-> uc_a5
+user_w -up-> uc_a6
+
+uc_a1 -right- uc_a2
+uc_a2 -right- uc_a3
+uc_a3 -right- uc_a4
+uc_a4 -right- uc_a5
+uc_a5 -right- uc_a6
+
+admin --> uc_b1
+admin --> uc_b2
+admin --> uc_b3
+admin --> uc_b4
+admin --> uc_b5
+admin --> uc_b6
+admin --> uc_b7
+@endUML
+
+@startUML
+title 主要类图
+class 报修人员{
+    姓名
+    地址
+    单位
+    报修()
+    验收()
+}
+class 维修人员{
+    姓名
+    位置
+    接单()
+
+}
+class 维修订单{
+    订单编号
+    异常视频信息
+    异常状态列表
+    异常文字描述
+    异常设备地址
+    报修人信息
+    维修人信息
+    订单状态
+    订单创建时间
+
+}
+class 管理员{
+
+}
+@endUML
+
+@startUML
+title 主线业务流程_报修维修
+start
+:报修人员创建报修订单;
+fork
+:维修人员查看未领取的维修订单;
+fork again
+:后台管理人员邀请维修人员接单;
+end fork
+:维修人员接单;
+repeat
+:维修人员进行维修; 
+:维修人员提请验收;
+repeat while (验收是否通过) is (未通过)
+-> 通过;
+:维修人员进行维修;
+:报修人员进行验收;
+:维修人员提请结款;
+:后台管理人员结款;
+end
+@endUML
+
+@startUML
+title 报修时序图
+actor 报修人员 as user_b
+participant 微信 as weiXing
+participant 小程序 as xiaoChengXu
+participant 后台 as houTai
+participant server 
+database 数据库 as db
+
+autoNumber
+==报修==
+user_b -> weiXing: 点击报修按钮
+weiXing -> server: 提交报修请求
+server -> db: 查询 [报修人信息]
+note over db
+主要查询数据为报修人地址
+endnote
+db --> server: 返回 [报修人信息]
+server --> xiaoChengXu: 返回报修页面
+user_b -> xiaoChengXu: 录入故障信息
+note over user_b
+故障信息包括:
+    故障视频信息
+    异常状态列表
+        异常状态大类 
+        异常状态小类
+    异常状态文字描述
+    异常设备地址
+endnote
+xiaoChengXu -> server: 提交故障信息
+server -> db: 创建 [维修订单], 订单状态为 [待接单]
+note over server
+维修订单字段包括
+    订单编号
+    异常视频信息
+    异常状态列表
+    异常文字描述
+    异常设备地址
+    维修人信息
+    订单状态
+    订单创建时间
+    订单修改时间
+endnote
+@endUML
+
+@startUML
+title 维修人员接单时序图
+actor 维修人员 as user_w
+participant 微信 as weiXing
+participant 微信小程序 as xiaoChengXu
+participant server 
+database 数据库 as db
+
+autoNumber
+user_w -> weiXing: 点击接单按钮
+weiXing -> server: 提交接单请求
+server -> db: 查询状态为 [未接单] 的 [维修订单]
+db --> server: 返回状态为 [未接单] 的 [维修订单]
+server -> server: 对返回的 [维修订单] 根据 [设备地址] 进行排序
+server --> xiaoChengXu: 生成 [未接单维修订单列表]
+user_w -> xiaoChengXu: 选择 [未接单维修订单]
+xiaoChengXu -> server: 提交选中订单
+server -> db: 修改 [维修订单] 状态为 [待维修]
+note over server
+维修订单新字段:
+    维修人信息
+endnote
+@endUML
+
+@startUML
+title 后台管理员邀请维修人员接单时序图
+actor 后台管理员 as admin
+actor 维修人员 as user_w
+participant 微信 as weiXing
+participant 微信小程序 as xiaoChengXu
+participant 后台 as houTai
+participant server 
+database 数据库 as db
+
+autoNumber
+admin -> houTai: 查看 [未接单] 的 [维修订单]
+houTai -> server: 提交查询请求
+server -> db: 查询 [未接单] 的 [维修订单]
+db --> server: 返回 [未接单] 的 [维修订单]
+server --> houTai: 返回 [未接单维修订单列表]
+admin -> houTai: 操作 [分配未接单维修订单]
+houTai -> server: 提交 [分配未接单维修订单] 请求
+server -> db: 查询 [维修人员] 信息
+db --> server: 返回 [维修人员] 信息
+server -> server: 按 [维修人员] 位置与 [维修订单] 位置的距离进行排序
+server --> houTai: 返回 [可分配人员列表]
+admin -> houTai: 选择分配的维修人员
+houTai -> server: 提交管理员选择的维修人员
+server -> weiXing: 推送邀请维修人员接单的消息
+user_w -> weiXing: 点击推送消息
+weiXing -> server: 提交用户操作
+server -> xiaoChengXu: 生成 [接单页面]
+user_w -> xiaoChengXu: 点击 [接单按钮]
+xiaoChengXu -> server: 提交用户操作
+server -> db: 修改 [维修订单] 状态为 [待维修]
+@endUML
+
+@startUML
+title 验收时序图
+actor 报修人员 as user_b
+actor 维修人员 as user_w
+participant 微信 as weiXing
+participant 微信小程序 as xiaoChengXu
+participant server
+database 数据库 as db
+
+autoNumber
+user_w -> weiXing: 查看 [维修订单]
+weiXing -> server: 提交用户查询请求
+server -> db: 查询 [维修订单]
+db --> server: 返回 [维修订单] 数据
+server --> xiaoChengXu: 生成 [维修订单] 页面
+user_w -> xiaoChengXu: 查看 [待维修] 状态的 [维修订单]
+xiaoChengXu -> server: 提交用户请求
+server -> db: 查询订单详情
+db --> server: 返回订单详情
+server --> xiaoChengXu: 生成订单详情页面
+user_w -> xiaoChengXu: 点击 [提请验收] 按钮
+xiaoChengXu -> server: 提交用户请求
+server -> db: 修改 [维修订单] 状态为 [待验收]
+server --> weiXing: 推送提醒报修人员验收的消息
+user_b -> weiXing: 点击推送的提醒验收的消息
+weiXing -> server: 提交用户请求
+server -> xiaoChengXu: 生成 [验收页面]
+user_b -> xiaoChengXu: 点击 [验收按钮]
+xiaoChengXu -> server: 提交用户请求
+server -> db: 修改 [维修订单] 状态为 [待结款]
+@endUML
+
+@startUML
+title 结款时序图
+actor 后台管理员 as admin
+actor 维修人员 as user_b
+@endUML

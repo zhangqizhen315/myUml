@@ -1,0 +1,155 @@
+@startuml
+title 巴门尼德关于关动不存在的论证
+class "只有存在的东西是存在的, 不存在的东西是不存在的" as uc1
+class "一个事物运动" as uc2
+package 此处{
+class "此时存于此处" as uc2_1
+class "彼时不存在于此处" as uc2_4
+}
+package 彼处{
+class "彼时存在于彼处" as uc2_2
+class "此时不存在于彼处" as uc2_3
+}
+class "该事物即存在, 又不存在" as uc3
+class "运动不可能"  as uc4
+
+uc2 --> uc2_1 : 意味着
+uc2_1 --> uc2_4
+
+uc2 --> uc2_2: 意味着
+uc2_2 --> uc2_3
+
+uc2_3 --> uc3
+uc2_4 --> uc3
+
+uc1 - uc3: 矛盾
+(uc1, uc3) .. uc4
+
+@enduml
+
+@startuml
+title 真理与现象分离的问题
+actor "人" as man
+(真理) as true
+package 现实 {
+(现象) as xianXiang
+(实用) as shiYong
+}
+
+man -[hidden]- true
+man --> xianXiang: 认识
+
+true .> shiYong: 不能作用于现实
+xianXiang --> shiYong: 作用
+
+xianXiang .> true: 不能通过认知现象来认识真理
+
+
+
+@enduml
+
+@startuml
+title 苏格拉底的研究方式
+start
+:提出被自己认为是最健全的理论;
+fork
+:把与这个理论相一致的认为是正确的;
+fork again
+:把与这个理论不一致的认为是错误的;
+fork end
+end
+
+@enduml
+
+@startuml
+title 对于美的解释
+start
+:一个事物是美的;
+fork
+note left
+自然哲学的解释方法
+end note
+fork
+:颜色;
+fork again
+:形状;
+fork again
+:.....;
+fork end
+fork again
+note left
+苏格拉底的解释方法
+end note
+:假设有绝对的美;
+fork
+:某事物之所以是美是因为绝对的美出现在它身上;
+fork again
+:或美的事物与绝对的美有某此联系;
+fork end 
+fork end 
+end
+@enduml
+
+
+
+@startuml
+title 如果有人纠缠这个假设本身
+start
+:提出一个自己认为最健全的假设;
+if (如果有人纠缠这个假设本身) then 
+:忽略这个他的意见;
+endif 
+:确定这个假设的各种推论是否一致;
+end
+@enduml
+
+
+@startuml
+title 不得不考察假设本身时
+start
+repeat
+:提出一个自己认为最健全的假设;
+if (如果有人纠缠这个假设本身) then 
+:忽略这个他的意见;
+endif 
+:确定这个假设的各种推论是否一致;
+repeat while(不得不陈述这个假设)
+-> 获得一个满意的假设为止;
+end
+@enduml
+
+@startuml
+title 自然哲学的研究方法
+(甲) as uc1
+(乙) as uc2
+(丙) as uc3
+(丁) as uc4
+(戊) as uc5
+
+uc1 --> uc2: 解释
+uc1 --> uc3: 解释
+uc1 ..> uc4: 无法解释
+uc5 --> uc4: 解释
+
+uc1 -> uc5: 当甲无法解释丁时, 寻找新的存在
+
+@enduml
+
+@startuml
+title 苏格拉底的研究方法
+package 第二次假设{
+package 第一次假设{
+(甲) as uc1
+(乙) as uc2
+(丙) as uc3
+}
+(丁) as uc4
+(戊) as uc5
+}
+
+uc1 --> uc2: 解释
+uc1 --> uc3: 解释
+uc1 .> uc4: 无法解释
+uc5 --> uc4: 解释
+
+@enduml

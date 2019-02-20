@@ -1,0 +1,244 @@
+@startUML
+scale 3
+title 基础物流业务
+(001 签订承运合同) as uc001
+(002 运输) as uc002
+(003 产生成本费用) as uc003
+(004 回收运费) as uc004
+(005 扩大生产) as uc005
+
+:客户: as customer
+:客户上游(托运人): as up
+:客户下游(成本单位): as down
+
+uc001 -> uc002
+uc002 -> uc003
+uc003 --> uc004
+uc005 <- uc004
+uc001 <-- uc005
+
+up --> uc001
+customer --> uc001
+customer --> uc003
+down --> uc003
+
+up .> customer: 支付运费
+customer .> down: 支付费用
+@endUML
+
+@startUML
+scale 3
+title 平台业务
+(001 录入数据) as uc001
+(002 授信) as uc002
+(003 产生成本) as uc003
+(004 代付) as uc004
+(005 产生新数据) as uc005
+(006 还款) as uc006
+(007 贷后) as uc007
+
+uc001 -> uc002: 后台授信
+uc002 -> uc003: 营业
+uc003 -> uc004: 支付成本
+uc004 --> uc005: 收集支付数据
+uc002 <-- uc005: 调整授信
+uc004 -> uc006: 还款
+uc006 -> uc007
+
+@endUML
+
+@startUML
+!include ./闭环流程.wsd!1
+scale 3
+title 客户行为
+
+:客户: as customer
+
+customer --> uc001
+customer --> uc003
+customer --> uc006
+@endUML
+
+@startUML
+!include ./闭环流程.wsd!1
+scale 3
+title 平台行为
+:平台: as sys
+
+sys --> uc002
+sys --> uc004
+sys --> uc005
+sys --> uc007
+
+@endUML
+
+@startUMl
+scale 3
+title 后台功能_授信
+together {
+    :平台: as sys
+    together {
+        (002 授信) as uc002
+        together {
+            (002_1 查看数据) as uc002_1
+            (002_2 数据复核) as uc002_2
+            (002_3 企业外查) as uc002_3
+            (002_4 设置参数) as uc002_4
+            (002_5 管理授信) as uc002_5
+                note right
+                授信是否会上下浮动
+                如果上下浮动如何处理
+                endnote 
+        }
+    }
+}
+
+sys -> uc002
+
+uc002 -right-> uc002_1
+uc002 -right-> uc002_2
+uc002 -right-> uc002_3
+uc002 -right-> uc002_4
+uc002 -right-> uc002_5
+
+uc002_1 -[hidden]-> uc002_2
+uc002_2 -[hidden]-> uc002_3
+uc002_3 -[hidden]-> uc002_4
+uc002_4 -[hidden]-> uc002_5
+@endUML
+
+@startUML
+scale 3
+title 后台功能_代付
+together {
+    :平台: as sys
+    together {
+        (004 代付) as uc004
+        together {
+            (004_1 查看费用) as uc004_1
+        }
+    }
+}
+
+sys -> uc004
+
+uc004 -> uc004_1
+@endUML
+
+@startUML
+scale 3
+title 后台功能_贷后
+together {
+    :平台: as sys
+    together {
+        (007 贷后) as uc007
+        together {
+            (007_1 查看贷款) as uc007_1
+            (007_2 逾期管理) as uc007_2
+
+            uc007_1 -[hidden]-> uc007_2
+        }
+    }
+}
+
+sys -> uc007
+
+uc007 -> uc007_1
+uc007 -> uc007_2
+@endUMl
+
+@startUML
+scale 3
+title 后台功能_辅助功能
+together {
+    :平台: as sys
+    together {
+        (008 客户管理) as uc008
+        (009 财务管理) as uc009
+        together {
+            (011 系统管理) as uc011
+            (011_1 权限管理) as uc011_1
+            (011_2 用户管理) as uc011_2
+        }
+        together {
+            (010 运营管理) as uc010
+            (011_1 风控管理) as uc001_1
+        }
+
+        uc008 -[hidden]right-> uc009
+        uc009 -[hidden]right-> uc010
+        uc010 -[hidden]right-> uc011
+
+    }
+}
+
+
+sys --> uc008
+sys --> uc009
+sys --> uc010
+sys --> uc011
+
+uc010 --> uc001_1
+uc011 --> uc011_1
+uc011 --> uc011_2
+@endUMl
+
+@startUMl
+scale 3 
+title 静态数据
+class "客户数据" as cl001 <001>
+class "客户上游" as cl002 <002>
+class "客户下游" as cl003 <003>
+
+class "大客户" as cl002_1 <002_1>
+class "其它客户包" as cl002_2 <002_2>
+
+class "费用" as cl003_1 <003_1>
+
+class "企业" as cl001_1 <001_1>
+class "个人" as cl001_2 <001_2>
+
+class "企业房产" as cl001_1_1 <001_1_1>
+class "企业车辆" as cl001_1_2 <c001_1_2>
+class "个人房产" as cl001_2_1 <001_2_1>
+class "个人房产" as cl001_2_2 <001_2_2>
+
+cl002 "*"-"1" cl001
+cl001 "1"-"*" cl003
+cl001 "1"-->"1" cl001_1
+cl001 "1"-->"1" cl001_2
+cl001_1 "1"-->"*" cl001_1_1
+cl001_1 "1"-->"*" cl001_1_2
+cl001_2 "1"-->"*" cl001_2_1
+cl001_2 "1"-->"*" cl001_2_2
+
+cl002_1 "*"<-"1" cl002
+cl002_2 "1"<-"*" cl002
+
+cl003 "1"->"*" cl003_1
+
+cl002_1 -[hidden]- cl002_2
+@endUML
+
+@startUML
+scale 3
+title 动态数据 
+class "营业收入" as cl004 <004>
+class "成本" as cl005 <005>
+
+class "轮胎费" as cl005_1 <005_1>
+class "运费" as cl005_2 <005_2>
+class "油费" as cl005_3 <005_3>
+class "路桥费" as cl005_4 <005_4>
+class "工资" as cl005_5 <005_5>
+class "其它项" as cl005_6 <005_6>
+
+cl005 --> cl005_1
+cl005 --> cl005_2
+cl005 --> cl005_3
+cl005 --> cl005_4
+cl005 --> cl005_5
+cl005 --> cl005_6
+@endUML
+
+

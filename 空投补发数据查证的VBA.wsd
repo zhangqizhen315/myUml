@@ -1,0 +1,67 @@
+@startuml
+scale 2
+title 计算当时余额的办法
+start
+:复制内容到 sheet1 中;
+:开始整一数据到 shee2 中:
+:设置 currentRange 为 A1;
+:设置 ;
+if (currentRange = transfer) then
+:设置 CurrentState 为 transfer;
+elseif (currentRange = form) then
+:设置 CurrentState 为 form;
+elseif (currentRange = value) then
+:设置 CurrentState 为 value;
+elseif (currentRange = Asset) then
+:设置 CurrentState 为 Assent;
+elseif (currentRange = Time) then
+:设置 CurrentState 为 Time;
+else 
+if (currentState = transfer) then
+
+elseif (currentState = from) then
+elseif (currentState = value) then
+elseif (currentState = Asset) then
+elseif (currentState = Time) then
+endif
+endif
+
+end
+@enduml
+
+
+@startdot
+digraph dfd2 {
+    node[shape=record]
+    subgraph level0{
+    enti1 [label="Customer" shape=box];
+    enti2 [label="Manager" shape=box];
+    }
+    subgraph level1{
+                    label ="Level 1";
+                    proc1 [label="{<f0> 1.0|<f1> One process here\n\n\n}" shape=Mrecord];
+                    proc2 [label="{<f0> 2.0|<f1> Other process here\n\n\n}" shape=Mrecord];
+                    store1 [label="<f0>    |<f1> Data store one"];
+                    store2 [label="<f0>   |<f1> Data store two"];
+                    {rank=same; store1, store2}
+
+    }
+}
+@enddot
+
+@startdot
+digraph test {
+    node [shape=record]
+    subgraph test{
+        a;
+        b;
+    }
+    subgraph test2{
+        label ="test2";
+        c [label = "好好好"];
+        d;
+        {rank=same; c, d}
+        好
+    }
+}
+@enddot

@@ -1,0 +1,528 @@
+@startUML
+scale 1024 width
+title 用户用例
+actor 用户
+package 积分相关用例 {
+    left to right direction
+    :用户: --> (账户管理)
+    :用户: --> (获得积分)
+    :用户: --> (管理积分)
+    :用户: --> (使用积分)
+    
+    (管理积分) --> (充值)
+    (管理积分) --> (提现)
+    (管理积分) --> (转账)
+    (管理积分) --> (查询)
+
+    (获得积分) --> (商家发放)
+    (获得积分) --> (参加积分活动)
+    (获得积分) --> (平台发放)
+
+    (账户管理) --> (注册登录)
+    (账户管理) --> (关联账户)
+
+    (使用积分) --> (购买卡券)
+    (使用积分) --> (交换积分)
+
+    (关联账户) --> (自动关联账户)
+    (关联账户) --> (手动关联账户)
+    (关联账户) --> (一键关联)
+}
+package 卡券相关用例 {
+    :用户: --> (使用卡券)
+}
+@endUML
+
+@startUML
+title 涉及系统及关系
+class 钱包管理平台 {
+    处理账户关系
+    ..
+    保存用户所有钱包的地址与密钥
+}
+class 积分卡券平台 {
+    提供业务功能
+    ..
+    不保存钱包地址
+}
+class 商家系统 {
+    用户资产真实存在的主体
+    ..
+    仅保存该用户在该商家和钱包地址与密钥
+}
+@endUML
+
+@startUML
+scale 1024 width
+title 三系统基本模型
+participant 商家系统 as sj
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+pt -> sj: 发起操作请求
+sj --> pt: 钱包地址及密钥
+pt -> qb: 发起操作
+qb -> qb: 完成操作
+qb --> pt: 返回结果
+==以下以查询余额为例说明该基本模型==
+pt -> pt: 用户在平台操作查询余额的操作
+pt -> sj: 请求进行余额查询
+sj --> pt: 用户钱包地址及密钥
+pt -> qb: 提交用户钱包地址及密钥, 请求查询余额
+qb -> qb: 查询该钱包所有关联钱包的余额
+qb --> pt: 返回钱包余额列表
+pt -> pt: 显示余额列表
+@endUML
+
+@startUML
+scale 1024 width
+title 用户登录流程图
+start
+fork
+:用户进入积分卡券平台;
+if () then (登录)
+:用户登录积分卡券平台;
+:显示用户积分余额;
+end
+else (注册)
+endif
+fork again
+:用户从商家系统跳转积分卡券平台;
+if (商家平台是否提供钱包地址) then (提供)
+if (是否有与该地址关联的钱包管理平台账号) then (有)
+:以关联的管理平台账号登记系统;
+:显示用户积分余额;
+end
+else (没有)
+endif
+else (未提供) 
+:钱包管理平台为该用户创建该商家钱包;
+:钱包管理平台将钱包地址返回给商家;
+endif
+end fork
+:用户创建钱包管理平台账号;
+if (是否传入钱包地址) then (否)
+end
+else (是)
+:将传入钱包地址与管理平台账号关联;
+:显示用户积分余额;
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 用户登录时序图1
+actor 用户 as user
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+user -> pt: 登录, 输入用户钱包管理平台账号
+pt -> qb: 传入用户钱包管理平台账号, 请求身份认证
+qb -> qb: 进行认证
+alt 身份认证通过
+qb --> pt: 登录成功, 返回用户余额列表
+pt --> user: 显示用户积分卡券平台首页
+else 身份认证未通过
+qb --> pt: 登录失败
+pt --> user: 登录失败提示页面
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 用户登录时序图2
+actor 用户 as user
+participant 商家系统 as sj
+participant 积分卡券平台 as pt
+participant 钱包管理系统 as qb
+
+autoNumber
+user -> sj: 操作跳转积分卡券平台
+sj -> pt: 调用积分卡券平台登录接口, 传入用户钱包
+pt -> qb: 请求认证钱包地址
+qb -> qb: 钱包地址认证
+alt 存在与该地址关联的钱包管理平台账号
+qb --> pt: 登录成功, 返回用户余额列表
+pt --> user: 登录成功, 显示积分卡券平台首页
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 用户登录时序图3
+actor 用户 as user
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+user -> pt: 发起注册操作
+pt -> qb: 提交注册操作
+qb --> user: 返回注册页面
+user -> qb: 输入注册信息
+qb -> qb: 创建钱包管理平台账号
+qb --> pt: 登录成功
+pt --> user: 登录成功, 显示积分卡券平台首页
+@endUML
+
+@startUML
+scale 1024 width
+title 用户登录时序图4
+actor 用户 as user
+participant 商家系统 as sj
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+user -> sj: 跳转积分卡券平台
+sj -> pt: 调用登录接口
+alt 传入用户钱包
+pt -> qb: 请求认证钱包
+qb -> qb: 钱包地址认证
+alt 不存在与该地址关联的钱包管理平台账号
+qb --> user: 注册页面 
+end
+else 未传入用户钱包
+qb -> qb: 为用户创建该商家的钱包
+qb --> sj: 用户钱包地址
+qb --> user: 注册页面
+end
+user -> qb: 输入注册信息
+qb -> qb: 创建用户钱包管理平台账号\n并将用户商家钱包关联至该账号
+@endUML
+
+@startUML
+scale 1024 width
+title 关联账户
+start
+:用户发起自动关联;
+:钱包管理平台执行自动关联;
+if (是否关联成功) then (是)
+:返回关联成功, 并显示余额;
+end
+else (否)
+repeat
+:返回关联失败, 并提示用户手动关联;
+:调用商家手动关联接口;
+:用户完成手动关联;
+repeat while (是否关联成功) is (否)
+-> 是;
+:返回关联成功, 并显示余额;
+stop
+@endUML
+
+@startUML
+scale 1024 width
+title 关联账户时序图
+actor 用户 as user
+participant 商家系统 as sj
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+user -> pt: 发起自动关联操作
+pt -> qb: 提交自动关联请求
+qb -> sj: 调用自动关联接口
+alt 自动关联成功
+sj --> qb: 返回用户的商家钱包地址
+qb -> qb: 将用户的商家钱包地址与用户的钱包管理平台账号进行关联
+qb --> pt: 返回关联成功, 并显示余额
+else 自动关联失败
+sj --> qb: 返回失败消息
+qb -> sj: 手动关联接口
+sj --> user: 手动关联页面
+user -> sj: 完成手动关联
+sj --> qb: 返回用户商家钱包地址
+qb -> qb: 将用户的商家钱包地址与用户的钱包管理平台账号进行关联
+qb --> pt: 返回关联成功, 并显示余额
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 一键关联
+start
+:用户操作一键关联;
+:钱包系统获取该用户未关联商家列表;
+repeat
+:取出一个未关联商家进行自动关联;
+if (关联是否成功) then (是)
+:标记该商家关联成功;
+else (否)
+:标记该商家关联失败;
+endif
+repeat while (是否还有未关联商家) is (是)
+-> 否;
+:显示关联成功的商家的积分余额;
+:将关联失败的商家标记为未关联商家;
+stop
+@endUML
+
+@startUML
+scale 1024 width
+title 商家发放积分
+start
+:用户在商家完成指定动作;
+:商家系统调用积分卡券平台发放积分接口;
+:积分卡券平台向钱包管理平台发起发放积分请求;
+:钱包管理平台完成积分发放;
+:积分卡券平台记录账务;
+stop
+@endUML
+
+@startUML
+scale 1024 width
+title 参加积分活动获得积分
+start 
+:商家管理员订制积分活动;
+:用户选择积分活动并进行参与;
+:积分卡券平台根据不同活动的推送提醒规划进行提醒;
+:用户完成积分活动内的任务;
+:积分卡券平台发放活动规定的积分;
+stop
+@endUML
+
+@startUML
+scale 1024 width
+title 参加积分活动获得积分时序图
+actor 商家管理员 as admin_sj
+actor 用户 as user
+participant 商家系统 as sj
+participant 积分卡券平台 as pt
+participant 钱包管理系统 as qb
+
+autoNumber
+admin_sj -> pt: 定制积分活动
+pt --> user: 推送积分活动
+user -> pt: 选择参加积分活动
+pt --> user: 定期提醒完成活动任务
+user -> pt: 点击提醒消息
+pt -> sj: 请求积分活动任务内容的入口
+sj --> user: 提供入口页面
+user -> sj: 完成积分活动任务内容
+sj --> pt: 返回完成积分活动结果
+pt -> qb: 请求发放积分
+qb -> qb: 发放积分
+qb --> pt: 返回发放积分结果
+pt -> pt: 记录账务
+@endUML
+
+@startUML
+scale 1024 width 
+title 使用积分卡券平台支付获得积分
+start
+fork
+:用户在商家系统选购商品;
+:用户使用积分卡券平台进行支付;
+fork again
+:用户在纯正选购商品;
+:用户使用积分卡券平台扫码进行支付;
+end fork
+:选择返还积分;
+:输入支付密码;
+repeat
+if (密码是否正确) then (是)
+:支付成功, 用户获得积分;
+stop
+elseif (是否输入错误三次) then (是)
+:支付失败;
+stop
+else (否)
+endif
+
+@endUML
+
+@startUML
+scale 1024 width
+title 线上支付获得积分时序图
+actor 用户 as user
+participant 商家系统 as sj
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+participant 第三方支付渠道 as zf
+
+autoNumber
+user -> sj: 选购商品并使用积分卡券平台进行支付
+sj -> pt: 调用积分卡郑平台的支付接口
+pt -> zf: 调用第三方支付渠道的支付接口
+zf --> pt: 支付结果
+pt -> pt: 计算返还积分
+pt -> qb: 请求发放积分
+qb --> pt: 返还发放结果
+pt --> sj: 返还支付结果
+@endUML
+
+@startUML
+scale 1024 width
+title 线下支付获得积分时序图
+actor 用户 as user
+actor 线下商家 as admin_sj
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+participant 第三方支付渠道 as zf
+
+autoNumber
+user -> admin_sj: 选购商品并要求使用积分卡券平台进行支付
+admin_sj -> user: 出示二维码
+user -> pt: 发起扫码操作
+pt -> admin_sj: 进行扫码
+pt -> zf: 调用第三方支付渠道的支付接口
+zf --> pt: 支付结果
+pt -> pt: 计算返还积分
+pt -> qb: 请求发放积分
+qb --> pt: 返还发放结果
+@endUML
+
+@startUML
+scale 1024 width
+title 积分余额查询
+actor 用户 as user
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+alt 用户通过登录进入积分卡券平台
+user -> pt: 打开包含积分余额的页面
+pt -> qb: 传入用户钱包管理平台账号, 请求获取用户积分列表
+else 用户通过商家系统跳转进入卡券平台
+user -> pt: 打开包含积分余额的页面
+pt -> qb: 传入用户商家钱包地址, 请求获取用户积分列表
+end
+qb --> pt: 返回用户积分列表数据
+pt --> user: 显示积分余额
+@endUML
+
+@startUML
+scale 1024 width
+title 积分充值
+actor 用户 as user 
+participant 积分卡券平台  as pt
+participant 钱包管理平台 as qb
+participant 第三方支付渠道 as zf
+
+autoNumber
+user -> pt: 发起用户积分充值
+pt -> qb: 查询积分属性是否充许充值
+alt 不充许
+qb --> pt: 不充许充值
+pt --> user: 提示该积分不可充值
+else  充许
+qb --> pt: 充许充值
+pt -> zf: 支付接口
+zf --> user: 支付页面
+user -> zf: 完成支付
+zf --> pt: 支付结果
+pt -> qb: 请求发放积分
+qb -> qb: 完成发放
+qb --> pt: 返回发放结果
+pt --> user: 提示充值成功
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 积分提现
+actor 用户 as user
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+participant 第三方支付渠道 as zf
+
+autoNumber
+user -> pt: 发起提现操作
+pt -> qb: 查询积分属性是否充许提现
+alt 不充许
+qb --> pt: 不充许提现
+pt --> user: 提示该积分不可提现
+else 充许
+qb --> pt: 充许提现
+pt -> qb: 请求回收积分
+qb -> qb: 完成回收积分
+qb --> pt: 返回回收积分结果
+pt -> zf: 支付给用户相应现金
+zf --> pt: 返回支付结果
+pt --> user: 提示提现成功
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 积分转账
+actor 用户 as user
+participant 积分卡券平台 as pt
+participant 钱包管理平台 as qb
+
+autoNumber
+user -> pt: 发起转账操作
+pt -> qb: 查询积分属性是否充许转账
+alt 不充许
+qb --> pt: 不充许转账
+pt --> user: 提示用户该积分不可转账
+else 充许
+qb --> pt: 充许转账
+pt -> qb: 发起转账请求
+qb -> qb: 完成转账
+qb --> pt: 返回转账结果
+pt --> user: 提示用户转账成功
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 后台用例
+actor 平台管理员 as admin_pt
+actor 商家管理员 as admin_sj
+admin_pt --> (商家管理)
+admin_pt --> (积分管理)
+admin_pt --> (订单管理)
+admin_pt --> (结算管理)
+
+(积分管理) --> (购买积分管理)
+(积分管理) --> (发放积分管理)
+
+(订单管理) --> (充值订单管理)
+(订单管理) --> (提现订单管理)
+(订单管理) --> (转账订单管理)
+@endUML
+
+
+@startUML
+scale 1024 width
+title 查询订单号方案
+actor 用户 as user
+participant 商家 as sj
+participant 积分卡券平台 as pt 
+participant 支付渠道 as zf
+
+autoNumber
+user -> sj: 消费
+sj -> zf: 调用支付接口
+zf -> zf: 完成支付
+zf --> sj: 返回支付结果
+sj -> pt: 发送订单信息及支付订单号
+pt -> zf: 调用订单查询接口
+zf --> pt: 订单详情
+pt -> pt: 匹配订单信息
+alt 订单信息匹配
+pt -> pt: 为用户发放积分
+pt --> sj: 返回积分发放成功
+else 订单信息不匹配
+pt --> sj: 返回错误信息
+end
+@endUML
+
+@startUML
+scale 1024 width
+title 发放积分接口设计
+interface 积分发放接口{
+    --请求参数--
+    ..支付渠道[支付宝/微信]..
+    ..商家订单信息..
+    ..支付订单信息..
+    ==如果为支付保需要传入参数==
+    
+    --响应参数--
+}
+@endUML
+
+

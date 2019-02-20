@@ -1,0 +1,116 @@
+@startuml
+scale 3
+title 生成报表
+start
+:1. 查询交易过 CPX 的地址;
+:2. 查询上述 CPX 地址的余额;
+:3. 生成余额报表;
+:4. 查询完成激励行为的用户;
+:5. 筛选完成激励活动的用户的余额报表;
+:6. 报送罗总;
+end
+@enduml
+
+@startuml
+scale 3
+title 发放空投
+start
+:1. 生成发放激励的总地址;
+:2. 生成三级激励的地址;
+:3. 罗总将激励活动的总 CPX 发送至激励活动的总地址;
+:4. 根据报表的筛选结果, 将 CPX 分别存入三级激励地址;
+fork
+:5. 发放 T2 级激励 CPX;
+fork again
+:6. 发放 T1 级激励 CPX;
+fork again
+:7. 发放起源级激励 CPX;
+fork end
+:8. 查验是否上链;
+if (是否上链) then (未上链)
+while (客户是否提出异议) is (未提出异议)
+:9. 次日查询是否上链;
+endwhile (提出异议) 
+:10. 补发 CPX;
+end
+else (已上链)
+end
+@enduml
+
+@startuml
+scale 3 
+title 整体分工界面
+actor 张启震 as a1
+actor 张玉涛 as a2
+actor 阿铁 as a3
+actor 罗总 as a4
+
+autonumber
+a2 -> a2: 生成完成激励行为的用户的余额报表
+a2 -> a1: 提交报表
+a1 -> a4: 提交报表
+a4 -> a4: 计算共需多少 CPX
+a3 -> a3: 生成激励活动总地址及三级激励地址
+a3 -> a1: 提交激励活动总地址
+a1 -> a4: 提交激励活动总地址
+a4 -> a4: 发放激励活动 CPX 到总地址
+a3 -> a3: 将激励活动 CPX 总地址分别打入三级激励地址
+a3 -> a3: 分别发放三级激励地址的 CPX 
+a1 -> a1: 查验上链
+@enduml
+
+@startuml
+scale 3
+title 计算 30 日余额流程
+
+start
+while (待查地址是否为空) is (不为空)
+:1. 从待查地址中取出一条地地址;
+note left
+假设
+    地址为 <addr 1>
+end note
+fork
+:2.1.1 查询该地址当前余额;
+:2.1.2 记录余额;
+note left
+假设
+   余额为 500
+end note
+:2.1.3 记录时间戳; 
+note left
+假设
+  时间为 11/3 18:00
+end note
+fork again
+:2.2.1 查询该地址所有交记录;
+note right
+假设
+  查出以下记录
+  11/3, 18:01, + 10
+  11/2, 18:01, + 30
+  11/1, 18:01, - 20
+  10/1, 18:01, + 100
+end note
+:2.2.2 筛选 30 日 18:00 后 查询余额前的记录;
+note right
+筛选结果如下:
+    11/2, 18:01, + 30
+    11/1, 18:01, - 20
+end note
+:2.2.3 对所有交易记录汇总;
+note right
+汇总结果如下:
+    (+ 30) + (- 20) = 10
+end note
+fork end
+:3 用户查询时的余额减去筛选后的交易记录之汇总;
+note right
+计算结果如下:
+    500 - 10 = 490
+因此, 用户 30 日 18:00 的余额为 490
+end note
+:4 记录该值;
+endwhile (为空) 
+end
+@enduml

@@ -1,0 +1,104 @@
+@startUML
+title 分象整体用例图
+actor 用户 as user
+actor 分象系统管理员 as admin
+rectangle 分象系统前台 {
+    usecase (登录) as uc_a_01
+    usecase (维护完整信息) as uc_a_02
+    usecase (绑定商家会员) as uc_a_03
+    usecase (积分交换) as uc_a_04
+    usecase (积分消费) as uc_a_05
+}
+rectangle 分象系统后台 {
+    usecase (创建商家) as uc_b_01
+    usecase (创建积分) as uc_b_02
+    usecase (创建商家管理员) as uc_b_03
+
+
+}
+rectangle 商家系统 {
+    usecase (进入分象系统) as uc_c_01
+}
+user -down- uc_a_01
+user -down- uc_a_02
+user -down- uc_a_03
+user -down- uc_a_04
+user -down- uc_a_05
+user -down- uc_c_01
+admin -down- uc_b_01
+admin -down- uc_b_02
+admin -down- uc_b_03
+@endUML
+
+@startUML
+scale 5000 width
+title 基本流程
+|分象系统后台|
+start
+:1. 系统管理员创建商家账户;
+note left
+创建商家接口
+end note
+
+:2. 系统管理员创建商家管理员;
+:3. 系统管理员/商家管理员创建商家积分;
+note left
+积分发行接口
+end note
+
+fork
+|分象系统前台|
+:3.1 用户登录/注册;
+note right
+创建用户钱包接口
+end note
+
+|商家系统|
+fork again
+:3.2 用户从商家系统进入分象;
+note right
+创建用户钱包接口
+end note
+
+fork end
+|分象系统前台|
+:4. 用户维护完善信息;
+note right
+更新用户钱包信息接口
+end note
+
+:5. 用户绑定其他商家会员;
+note right
+更新用户钱包信息接口
+end note
+
+:6. 用户进行积分交换;
+:7. 用户进行积分消费;
+end
+@endUML
+
+
+@startUML
+scale 1000 width
+
+class 商家 {
+    名称()
+    隶属关系()
+}
+class 积分{
+    ???使用期限(有或没有)
+    积分名称()
+    发行价(对应 v 分的比率)
+    限额(可能没有可能有)
+    额度给不了具体的数量()
+}
+class 用户{
+    账号
+}
+class 更新用户 {
+    商家列表
+    实名认证
+    余额
+    积分使用期限
+}
+@endUML

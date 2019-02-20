@@ -1,0 +1,374 @@
+@startUML
+title 整体用例图
+actor "卡券系统后台管理员" as admin
+actor "用户" as user
+rectangle 卡券系统 {
+    rectangle 卡券后台 {
+        usecase (定制卡券) as us1
+        usecase (创建卡券) as us2
+        usecase (生成卡券) as us3
+        usecase (卡券上架) as us4
+        usecase (推荐定制) as us5
+        usecase (提醒定制) as us6
+        usecase (核销卡券) as us7
+        usecase (卡券结算) as us8
+        usecase (积分结算) as us9
+    }
+    rectangle 卡券前台 {
+        usecase (进入卡券系统) as us_b_01
+        usecase (购买卡券) as us_b_02
+        usecase (使用卡券) as us_b_03
+    }
+}
+rectangle 宿主平台 {
+    usecase (用户登录) as us_c_01
+    usecase (跳转卡券系统) as us_c_02
+}
+rectangle 第三方外包系统 {
+    usecase (生成标识) as us_d_01
+    usecase (校验标识) as us_d_02
+}
+rectangle 卡券提供商系统 {
+    usecase (提供卡券) as us_e_01
+    usecase (提供服务) as us_e_02
+}
+
+admin -down- us1: 有市场价格的卡券
+admin -down- us2: 没有市场价格的卡券
+us1 -down- us3
+us2 -down-us3
+us3 -down- us4
+us4 -down- us5
+us5 -down- us6
+us6 -down- us7
+us7 -down- us8
+us7 -down- us9
+us_b_01 -down- us_b_02
+us_b_02 -down- us_b_03
+us_b_02 -right-> us4: 依赖
+us5 -left-> us_b_02: 依赖
+us_b_03 -right-> us6: 依赖
+us7 -left-> us_b_03: 依赖
+user -down- us_c_01
+us_c_01 -down- us_c_02
+us_c_02 -- us_b_01
+us1 -right-> us_d_01
+us7 -right-> us_d_02
+us1 -right-> us_e_01
+us7 -right-> us_e_02
+@endUML
+
+@startUML
+title 用户登录_时序图
+actor 用户 as user
+participant 宿主平台 as suZhu
+participant 卡券系统前台 as kaQuanQianTai
+participant 卡券系统server as kaQuanHouTai
+database 卡券系统数据库 as kaQuanShuJu
+autoNumber
+user -> suZhu: 用户登录
+suZhu -> suZhu: 跳转卡券系统
+suZhu -> kaQuanHouTai: 调用登录接口
+kaQuanHouTai -> kaQuanShuJu: 查询用户 [我的卡券] 信息
+kaQuanShuJu --> kaQuanHouTai: 返回查询结果
+kaQuanHouTai -> kaQuanQianTai: 显示 [我的钱包] 页面
+@endUML
+
+@startUML
+title 用户登录_流程图
+|用户|
+start
+|宿主平台|
+:1. 登录宿主平台;
+:2. 跳转卡券平台;
+:3. 调用 [卡券平台登录接口] 接口;
+|卡券系统前台|
+|卡券系统server|
+:4. 查询用户是否存在;
+|卡券系统数据库|
+:5. 返回用户信息;
+|卡券系统server|
+if (用户是否存在) then (是)
+:8. 查询用户信息;
+else (否)
+:6. 创建用户;
+|卡券系统数据库|
+:7. 创建用户数据;
+|卡券系统server|
+endif
+|卡券系统数据库|
+:9. 返回用户 [我的卡券] 信息;
+|卡券系统server|
+:10. 生成 [我的卡券] 页面;
+|卡券系统前台|
+:11. 显示 [我的卡券] 页面;
+stop
+@endUML
+
+@startUML
+title 卡券订购_时序图
+actor 卡券系统后台管理员 as admin
+box "卡券系统"
+participant 卡券系统后台 as kaQuanHouTai
+participant 卡券系统server as kaQuanServer
+database 卡券系统数据库 as kaQuanShuJu
+end box
+participant 卡券提供商系统 as kaQuanTiGongShang
+
+autoNumber
+admin -> kaQuanHouTai: 发起订购
+kaQuanHouTai -> kaQuanServer: 提交订购请求
+kaQuanServer -> kaQuanTiGongShang: 调用 [获取卡券] 接口
+kaQuanTiGongShang --> kaQuanServer: 返回 [预选卡券列表]
+kaQuanServer -> kaQuanShuJu: 创建 [卡券] 数据, [卡券] 状态为 [待订购]
+kaQuanServer -> kaQuanHouTai: 生成 [卡券列表] 页面
+admin -> kaQuanHouTai: 创建 [订购卡券订单]
+kaQuanHouTai -> kaQuanServer: 提交 [订购卡券订单]
+kaQuanServer -> kaQuanShuJu: 创建 [订购卡券订单], 订单状态为 [待确定].
+kaQuanServer -> kaQuanTiGongShang: 调用 [卡券订购确认] 接口
+kaQuanTiGongShang --> kaQuanServer: 返回 [卡券订购确认] 消息
+kaQuanServer -> kaQuanShuJu: 修改 [卡券订购订单] 状态为 [订单完成]
+kaQuanServer -> kaQuanShuJu: 修改 [卡券] 状态为 [待生成]
+@endUML
+
+@startUML
+title 定价支持
+box "卡券系统"
+participant 卡券系统server as kqServer
+database 卡券系统数据库 as kqShuJu
+end box
+participant 宿主平台 as suZhu
+
+autoNumber
+group "计算 [积分/卡券成本]"
+kqServer -> kqShuJu: 查询 [卡券] [成本] 信息
+kqShuJu --> kqServer: 返回 [卡券] [成本] 信息
+kqServer -> suZhu: 查询 [积分] [价格] 信息
+suZhu --> kqServer: 返回 [积分] [价格] 信息
+kqServer -> kqServer: 计算 [积分/卡券成本] 
+kqServer -> kqShuJu: 存储 [卡券] [积分/卡券成本] 信息
+end 
+group "计算 [积分/卡券价值]"
+kqServer -> kqShuJu: 查询 [卡券] [价值] 信息
+kqShuJu --> kqServer: 返回 [卡券] [价值] 信息
+kqServer -> suZhu: 查询 [积分] [价格] 信息
+suZhu --> kqServer: 返回 [积分] [价格] 信息
+kqServer -> kqServer: 计算 [积分/卡券价值]
+kqServer -> kqShuJu: 存储 [积分/卡券价值]
+end 
+@endUML
+
+@startUML
+title 卡券创建_时序图
+actor 卡券系统后台管理员 as admin
+box "卡券系统"
+participant 卡券系统后台 as kqHouTai
+participant 卡券系统server as kqServer
+database 卡券系统数据库 as kqShuJu
+end box
+participant 卡券提供商系统 as kqTiGongShang
+
+autoNumber
+admin -> kqHouTai: 发起创建卡券
+kqHouTai -> kqServer: 提交发起创建卡券
+kqServer --> kqHouTai: 返回 [创建卡券] 表单
+admin -> kqHouTai: 录入卡券信息
+kqHouTai -> kqServer: 提交卡券信息
+kqServer -> kqShuJu: 创建 [卡券] 信息, 卡券状态是 [待生成]
+kqServer -> kqTiGongShang: 调用 [卡券确认] 接口
+kqTiGongShang --> kqServer: 返回 [卡券确认] 结果
+@endUML
+
+@startUML
+title 卡券生成_时序图
+actor 卡券系统后台管理员 as admin
+box "卡券系统"
+participant 卡券系统后台 as kqHouTai
+participant 卡券系统server as kqServer
+database 卡券系统数据库 as kqShuJu
+end box
+participant 第三方外包系统 as kqWaiBao
+
+autoNumber
+
+admin -> kqHouTai: 发起卡券生成
+kqHouTai -> kqServer: 提交卡券生成请求
+kqServer -> kqShuJu: 查询 [卡券] 状态为 [待生成] 的卡券
+kqShuJu --> kqServer: 返回 [卡券] 状态为 [待生成] 的卡券数据
+kqServer -> kqHouTai: 生成 [待生成卡券列表]
+admin -> kqHouTai: 确认生成卡券
+kqHouTai -> kqServer: 提交生成卡券列表
+kqServer -> kqWaiBao: 调用 [生成卡券标识] 接口
+kqWaiBao -> kqWaiBao: 生成卡券标识
+kqWaiBao --> kqServer: 返回 [生成卡券标识] 结果
+kqServer -> kqShuJu: 修改 [卡券] 状态为 [待上架]
+@endUML
+
+@startUML
+title 卡券上架_时序图
+actor 卡券系统后台管理员 as admin
+box "卡券系统"
+participant 卡券系统前台 as kqQianTai
+participant 卡券系统后台 as kqHouTai
+participant 卡券系统server as kqServer
+database 卡券系统数据库 as kqShuJu
+end box
+
+autoNumber
+admin -> kqHouTai: 发起卡券上架
+kqHouTai -> kqServer: 提交卡券上架请求
+kqServer -> kqShuJu: 查询 [卡券] 状态为 [待上架] 的卡券数据
+kqShuJu --> kqServer: 返回 [卡券] 状态为 [待上架] 的卡券数据
+kqServer -> kqServer: 进行 [卡券定价支持] 功能
+kqServer --> kqHouTai: 生成 [待上架卡券列表]
+admin -> kqHouTai: 进行定价并上架
+kqHouTai -> kqServer: 提交上架信息
+kqServer -> kqShuJu: 修改 [卡券] 状态为 [上架]
+kqHouTai -> kqQianTai: 生成 [卡券商城] 相关页面
+@endUML
+
+@startUML
+title 卡券购买_时序图
+actor 用户 as user
+box "卡券系统"
+participant 卡券系统前台 as kqQianTai
+participant 卡券系统server as kqServer
+database 卡券数据库 as kqShuJu
+end box
+participant 宿主平台 as suZhu 
+participant 第三方外包系统 as kqWaiBao
+
+autoNumber
+user -> kqQianTai: 购买卡券
+kqQianTai -> kqServer: 提交购买请求
+kqServer -> kqWaiBao: 调用 [查询卡券库存] 接口
+activate kqServer
+activate kqWaiBao
+kqWaiBao --> kqServer: 返回 [卡券库存]
+deactivate kqWaiBao
+kqServer -> kqShuJu: 创建 [购买卡券订单] 状态为 [待支付]
+kqServer -> suZhu: 调用支付接口
+activate kqServer
+activate suZhu
+suZhu -> kqQianTai: 生成支付页面
+user -> kqQianTai: 支付订单
+kqQianTai -> suZhu: 提交支付请求
+suZhu --> kqServer: 返回支付结果
+deactivate kqServer
+deactivate suZhu
+kqServer -> kqWaiBao: 调用 [生成卡券标识] 接口
+kqWaiBao --> kqServer: 返回 [卡券标识]
+kqServer -> kqShuJu: 修改 [卡券订单] [卡券标识信息]
+kqServer -> kqShuJu: 修改 [卡券订单] 状态 [订单完成]
+kqServer -> kqShuJu: 创建 [我的卡券] 数据, 状态为 [未使用]
+kqServer -> kqQianTai: 生成 [我的卡券] 页面
+deactivate kqServer
+@endUML
+
+@startUML
+title 试试能不能画出来功能架构
+top to bottom direction
+rectangle 宿主平台{
+    rectangle 用户系统
+    rectangle 支付系统
+    rectangle 卡券系统{
+        rectangle 后台{
+            rectangle 生成{
+                rectangle 卡券定制
+                rectangle 卡券创建
+            }
+            rectangle 流通{
+                rectangle 卡券销售
+            }
+            rectangle 价格支持{
+                rectangle 成本计算
+                rectangle 盈利计算
+            }
+            rectangle 推送推荐{
+                rectangle 推送定制
+                rectangle 推荐定制
+            }
+            rectangle 卡券核销{
+                rectangle 卡券核销.
+            }
+            rectangle 结算 {
+                rectangle 卡券结算
+                rectangle 积分结算
+            }
+        }
+        rectangle 前台{
+            rectangle 我的卡券
+            rectangle 购买卡券
+            rectangle 卡券商城
+            rectangle 使用卡券
+        }
+    }
+}
+rectangle 卡券外包系统{
+
+}
+rectangle 卡券提供商系统{
+
+}
+@endUML
+
+@startUML
+title 卡券购买_流程图
+|用户|
+start
+|卡券系统前台|
+|卡券系统server|
+|卡券系统数据库|
+|宿主平台|
+|第三方卡券外包系统|
+|用户|
+:1. 用户购买卡券;
+|卡券系统前台|
+:2. 提交卡券购买请求;
+|卡券系统server|
+:3. 调用 [查询卡券库存] 接口;
+|第三方卡券外包系统|
+:4. 返回 [卡券库存] 信息;
+|卡券系统server|
+if (判断卡券库存) then (库存小于1)
+|卡券系统前台|
+:5. 提示库存不足, 显示购买失败;
+stop
+else (库存大于1)
+|卡券系统server|
+:6. 创建 [购买卡券订单];
+|卡券系统数据库|
+:7. 创建 [购买卡券订单] 订单状态为 [待支付];
+|卡券系统server|
+:8. 调用 [支付接口];
+if () then (支付失败或超过十分钟上无响应)
+|卡券系统数据库|
+:9. 修改 [购买卡券订单] 状态为 [支付失败]
+|卡券系统前台|
+:10. 提示未支付成功;
+stop
+else (支付成功) 
+|卡券系统数据库|
+:11. 修改 [购买卡券订单] 状态为 [待分配卡券标识];
+|卡券系统server|
+:12.调用 [获取卡券标识] 接口;
+|第三方卡券外包系统|
+:13. 返回 [卡券标识];
+if () then (获取卡券标识失败)
+|卡券系统server|
+:14. 修改 [购买卡券状态];
+|卡券系统数据库|
+:15. 修改 [购买卡券订单] 状态为 [分配卡券标识失败];
+|卡券系统前台|
+:16. 提示卡券购买失败;
+stop
+else (获取卡券成功)
+|卡券系统server|
+:17. 修改 [购买卡券订单] ;
+|卡券系统数据库|
+:18. 修改 [购买卡券订单] 状态为 [分配卡券标识成功];
+|卡券系统前台|
+:20. 提示卡券购买成功;
+stop
+endif
+@endUML

@@ -1,0 +1,47 @@
+@startuml
+scale 3
+title wiki管理用例
+actor me
+usecase "uc1 写日记" as uc1
+usecase "uc2 创建主题" as uc2
+usecase "uc3 写 wiki" as uc3
+
+me -> uc1
+me -> uc2
+me -> uc3
+@enduml
+
+@startuml
+scale 3
+title uc1-写日记-流程图
+start
+:执行写日记命令;
+if (当前月份目录是否存在) then (不存在)
+:创建月份导航;
+:创建月份目录;
+endif
+if (当前日期文件是否存在) then (不存在)
+:创建日期导航;
+:创建日期文件;
+endif
+:用 vim 打开日期文件;
+end
+@enduml
+
+@startuml
+title uc2-写wiki-流程图
+start
+:执行写 wiki 命令;
+while (主题是否存在) is (不存在)
+:提示用户创建主题;
+:用户调用创建主题命令;
+:从模板复制份 wiki 改名为主题名;
+:修改主题导航名称;
+endwhile (存在)
+while (文章是否存在) is (不存在)
+:创建文章; 
+:在 navigation.md 中插入相应的导航;
+endwhile (存在)
+:打开文章;
+end
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+title 瀑布模型2
+actor 需求分析人员 as xuQiu
+actor 设计人员 as sheJi
+actor 开发人员 as kaiFa
+actor 测试 as ceShi
+actor 运维 as yunWei
+participant 文档系统 as sys
+
+autonumber
+xuQiu -> xuQiu: 需求分析, 制作文档, 开会签字
+xuQiu -> sys: 提交文档
+sheJi -> sys: 获取需求文档
+sys --> sheJi: 返加文档
+sheJi -> sheJi: 系统设计, 制作文档, 开会签字
+sheJi -> sys: 提交文档
+kaiFa -> sys: 获取文档
+sys --> kaiFa: 返回文档
+kaiFa -> kaiFa: 编码
+kaiFa -> sys: 提交编码
+ceShi -> sys: 获取文档
+sys --> ceShi: 返回文档
+ceShi -> ceShi: 测试代码, 制作测试报告, 开会签字
+ceShi -> sys: 提交报告
+yunWei -> sys: 获取文档
+sys --> yunWei: 返回文档
+yunWei -> yunWei: 布署系统, 进行运维
+
+@enduml

@@ -1,0 +1,19 @@
+digraph test {
+    a -> b
+    b -> c
+    好
+    否
+    { rank=min; a, b };
+    { rank=same; a, 否}
+    { rank=max; c, 好}
+    
+    subgraph cluster_sub {
+        tabel="这是一个 sub";
+        e [label="地理"]
+        d [label="大发现"]    
+        e -> d[label="ok"];
+    }
+    node [shape = record, height=1]
+    s [label = "<f0> fo | <f0> f1 \n\n | <f2> f2 "];
+    
+}

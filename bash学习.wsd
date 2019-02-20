@@ -1,0 +1,190 @@
+@startuml
+title linux系统
+together {
+rectangle 应用程序 as yycx{
+}
+rectangle windows管理程序 as windows{
+    rectangle GNU实用程序 as GNU
+}
+rectangle linux内核 as core {
+
+}
+rectangle 计算机硬件 as hard{
+    
+}
+}
+yycx -- windows
+windows -- core
+core -- hard
+
+@enduml
+
+@startditaa
+linux系统
++---------------------------------------+
+|                                       |
+|      应用程序                             | 
+|                                       |
++---------------------------------------+
+        |  |  |  |
++---------------------------------------+
+|                +----------------------+ 
+|windows 管理软件    |
+|                | +--------------------+
+|                | |  GNU 实用程序          |
++----------------+ +--------------------+
+       |   |    |    |    |-
++--------------------------------------+
+|                                       |
+|      linux 内核                         | 
+|                                       |
++---------------------------------------+
+     |    |    |    |    |
++---------------------------------------+
+|                                       |
+|      计算机硬件                            | 
+|                                       |
++---------------------------------------+
+@endditaa
+
+@startuml
+title 读者对象
+actor "读者" as user 
+actor "系统管理员" as u1
+actor "linux" as u2
+usecase "自动化执行管理任务" as uc1
+usecase "监控系统数据和数据文件" as uc2
+usecase "生成报告" as uc3
+usecase "了解系统内部发生了什么" as uc4
+usecase "如何访问命令提示符" as uc5
+usecase "介绍进入命令提示符后做些什么" as uc6
+
+user <|-- u1
+user <|-- u2
+
+u1 --> uc1
+u2 --> uc4
+
+uc1 
+
+
+@enduml
+
+@startuml
+title 知识库的结构
+object "ob1 知识库" as ob1
+object "ob2 wiki" as ob2
+object "ob2_1 未整理" as ob2_1
+object "ob2_2 主题 wiki" as ob2_2
+object "ob3 blog" as ob3
+object "ob4 公众号" as ob4
+object "ob5 写作动机" as ob5
+
+ob1 --> ob2 
+ob1 --> ob3
+ob2 --> ob2_1
+ob2 --> ob2_2
+
+ob2_1 -> ob2_2: 确定主题
+ob2 -> ob3: 综合表述
+ob1 -> ob4: 有立场表达
+(ob1, ob4) .down.> ob5
+
+ob2 : 事实
+ob2 : 方法
+ob2 : 观点
+ob2 : 逻辑
+
+ob5 : 热点事件
+ob5 : 情绪
+ob5 : 话题
+
+@enduml
+
+@startuml
+title ww.sh的逻辑
+start
+:执行命令;
+if (参数数量) then (0)
+:用 vim 打开 [未整理] 的首页;
+end
+elseif (参数数量) then (1)
+if ($1 是否为 s/g/f/l) then (是)
+:提示语法;
+end
+else (否)
+:调用 mksub.sh 命令, 并传入 $1;
+end
+endif
+elseif (参数数量) then (2)
+if ($1 是否为 s/g/f/l) then (是)
+:在 [未整理] 的相应分类下添加新内容 $2 ;
+:用 vim 打开新增内容;
+end
+else (否)
+:提示语法;
+end
+endif
+elseif (参数数量) then (3)
+if ($1 是否为 s/g/f/l) then (是)
+if ($3 作为主题是否存在) then (是)
+:在 [$3 主题] 的相应分类下添加新内容 $2;
+:用 vim 打开 $2;
+end
+else (否)
+:提示用户创建主题;
+end
+endif
+else (否)
+:提示语法;
+end
+endif
+else (参数数量 > 3)
+:提示语法;
+end
+@enduml
+
+@startuml
+scale 3
+title 区块链应用
+actor "用户甲" as user1
+actor "用户乙" as user2
+rectangle "企业 A" as qya {
+    rectangle "数据分析" as sja
+    rectangle "营销系统" as yxa
+}
+rectangle "企业 B" as qyb {
+    rectangle "数据分析" as sjb
+    rectangle "营销系统" as yxb
+}
+rectangle APEX {
+    rectangle "节点 A" as jda
+    rectangle "节点 B" as jdb
+}
+
+yxa --> jda: 发行积分 a
+yxb --> jdb: 发行积分 b
+
+sja -[hidden]right- yxa
+
+ 
+
+@enduml
+
+@startuml
+
+rectangle 歧视 {
+rectangle "本源性歧视" {
+    usecase 女性歧视 as c1
+}
+rectangle "洐生歧视" {
+    usecase 黑人歧视 as c2
+    usecase 其他歧视 as c3
+}
+}
+
+c1 --> c2: 派生
+c1 --> c3: 派生
+
+
+@enduml

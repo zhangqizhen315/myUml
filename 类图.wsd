@@ -1,0 +1,37 @@
+@startuml
+title 类图的各种线
+class01 <|--class02
+class03 *--class04
+class05 o.. class06
+class07 .. class08
+class09 -- class10
+@enduml
+
+@startuml
+title 数量对应关系
+class01 "1" *-- "*" class02: 一对多的关系
+class02 -- class03: 这是一个关于联系的描述
+@enduml
+
+@startuml
+title 类的属性和方法
+class 一个类 {
+    + string ()
+   string data 
+   void methods() 
+}
+@enduml
+
+@startuml
+package 数学 {
+    class 对角线计算 
+    class 开平方
+}
+package 物理 {
+    class 几何
+}
+
+几何 --> 对角线计算
+几何 --> 开平方
+@enduml
+

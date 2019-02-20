@@ -1,0 +1,108 @@
+@startUML
+title 运营方使用商家积分与商家结算的模式
+participant 用户甲在商户A的账户 as a1
+participant 运营方在商户B的账户 as a2
+participant 用户甲在商户B的账户 as b1
+participant 运营方在商户B的账户 as b2
+participant 用户甲在HiApp的账户 as h1
+participant 运营方在HiApp的账户 as h2
+
+note over a1, h2
+假设:
+商户 A 有积分 a, 商户 B 有积分 b 
+用户在 A 商家, B 商家均有账户
+用户在 A 商家拥有积分 10 个 a 积分
+用户在 B 商家没有积分
+用户希望通过使用 10 个 a 积分换取 1000 个 b 积分
+系统操作如下:
+end note
+
+note over a2: 余额 0 a
+note over a1: 余额 10 a
+a1 -> a2: 转账 10 个 a 积分
+note over a1: 余额 0 a 
+note over a2: 余额 10 a
+
+note over h2: 余额 100 v 分
+note over h1: 余额 0 V 分
+h2 -> h1: 转账 10 个 b 积分
+note over h2: 余额 0 v 分
+note over h1: 余额 100 v 分
+
+==用户甲向运营方卖出了 10 个 a 积分, 获得 100 个 v 分.==
+
+note over b2: 余额 1000 b 积分
+note over b1: 余额 0 b 积分
+b2 -> b1: 转账 1000 个 b 积分
+note over b1: 余额 1000 个 b 积分
+note over b2: 余额 0 个 b 积分
+
+note over h1: 余额 100 个 v 分
+note over h2: 余额 0 个 v 分
+h1 -> h2: 转账 100 个 v 分
+note over h2: 余额 100 个 v 分
+note over h1: 余额 0 个 v 分
+==用户甲向运营方购买 1000 个 b 积分, 支付 100 个 v 分.==
+note over a1, h2
+交换业务结束, 各账户变化如下:
+用户甲在商家 A 的账户减少 10 个 a 积分, 在商家 B 的账户中增加 1000 个 b 积分, HiApp账户未发生改变;
+运营方在商家 A 的账户增加 10 个 a 积分, 在商家 B 的账户中减少 1000 个 b 积分, HiApp账户未发生改变；
+运营方结算内容如下:
+end note 
+
+a2 -> a2: 结算增加的 10 个 b 积分
+b2 -> b2: 结算减少的 1000 个 b 积分
+
+@endUML
+
+@startUML
+title 商户使用 v 分, 向 HiApp 结算的模式
+participant 用户甲在商户A的账户 as a
+participant 用户甲在商户B的账户 as b
+participant 用户甲在HiApp的账户 as h1
+participant 运营商A在HiApp的账户 as h2
+participant 运营商B在HiApp的账户 as h3
+
+note over a, h3
+商户 A 有积分 a, 商户 B 有积分 b 
+用户在 A 商家, B 商家均有账户
+用户在 A 商家拥有积分 10 个 a 积分
+用户在 B 商家没有积分
+用户希望通过使用 10 个 a 积分换取 1000 个 b 积分
+系统操作如下:
+end note
+note over a: 余额 10 个 a 积分
+a -> a: 商家扣减用户 a 用于交换的 10 个积分
+note over a: 余额 0 个 a 积分
+
+note over h1:余额 0 个 v 分
+note over h2: 余额 100 个 v 分
+h2 -> h1 : 转账 100 个 v 分
+note over h2: 余额 0 个 v 分
+note over h1: 余额 100 个 v 分
+
+==相当于用户使用 a 积分向商家 A 购买 v 分==
+
+note over h3: 余额 0 个 v 分
+h1 -> h3: 转账 100 个 v 分
+note over h3: 余额 100 个 v 分
+note over h1: 余额 0 个 v 分
+
+note over b: 余额 0 个 b 积分
+b -> b: 发放 1000 个 b 积分
+note over b: 余额 1000 个 b 积分
+
+==相当于用户使用 v 积分向商家 B 购买 b 积分==
+
+note over a, h3
+经过积分交换, 各账户变化如下:
+用户甲在商家 A 的账户减少 10 个 a 积分, 在商家 B 的账户增加 1000 个 b 积分, HiApp 账户没有变化
+商家 A 在 HiApp 的账户减少 100 个 v 分;
+商家 B 在 HiApp 的账户增加 100 个 v 分；
+商家 A 和 商家 B 的账户结算如下:
+end note
+
+h2 -> h2 : 商家 A 向 HiApp 结算减少的 100 个 v 分
+h3 -> h3 : 商家 B 向 HiApp 结算增加的 100 个 v 分
+@endUML
+
