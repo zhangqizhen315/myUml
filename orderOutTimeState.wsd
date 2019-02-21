@@ -1,9 +1,0 @@
-@startuml
-!include ./orderState/orderState.wsd!0
-!include ./orderState/timeOutState.wsd!0
-title 订单中的超时状态
-st001 -> to001
-st002 -> to001
-st003 -> to001
-st004 -> to001
-@enduml

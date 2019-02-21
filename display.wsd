@@ -1,3 +1,0 @@
-@startuml
-!include ./class/parkinsonLaw.wsd!0
-@enduml

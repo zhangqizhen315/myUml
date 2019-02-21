@@ -65,7 +65,6 @@ user <|-- u2
 u1 --> uc1
 u2 --> uc4
 
-uc1 
 
 
 @enduml

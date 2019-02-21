@@ -1,0 +1,2265 @@
+@startUML
+scale 3
+title 闭环流程
+rectangle b as "积分卡券系统" {
+(uc000 用户登录) as uc000
+(uc001 获取积分) as uc001
+(uc002 购买卡券) as uc002
+(uc003 使用卡券) as uc003
+(uc004 数据收集) as uc004
+(uc005 生成积分) as uc005
+(uc006 生成卡券) as uc006
+(uc007 盈利分析) as uc007
+(uc008 积分定价) as uc008
+(uc009 卡券定价) as uc009
+(uc010 使用引导) as uc010
+(uc011 推荐卡券) as uc011
+}
+
+:用户: -> uc000
+:用户: -> uc001
+uc000 -[hidden]-> uc001
+uc000 -[hidden]-> uc002
+uc000 -[hidden]-> uc003
+uc001 -> uc002: 用户使用积分在系统内购买卡券
+uc002 -> uc003: 用户在商家使用获取的购买的卡券
+uc003 -left-> uc001: 现金部分重新引导用户消费, 用户进而重新获取积分
+
+uc001 ---[#orange]--> uc004: 数据源 1
+uc002 ---[#orange]--> uc004: 数据源 2
+uc003 ---[#orange]--> uc004: 数据源 3
+uc005 -[#orange]-> uc004: 数据源 4
+uc006 -[#orange]-> uc004: 数据源 5
+
+uc007 <-[#0000ff]- uc004
+uc010 <-[#0000ff]- uc004
+uc011 <-[#0000ff]- uc004
+
+uc008 <-[#0000ff]- uc007
+uc009 <-[#0000ff]- uc007
+
+uc001 <-[#0000ff]- uc005
+uc002 <-[#0000ff]- uc006
+uc002 <-[#0000ff]- uc008
+uc002 <-[#0000ff]- uc009
+uc003 <-[#0000ff]- uc010
+uc002 <-[#0000ff]- uc011
+
+note bottom of uc004
+数据源 1 : 
+    用户 商家 金额 订单详情 发行积分
+数据源 2 :
+    用户 积分数量 获取卡券数量 获取卡券种类
+数据源 3 : 
+    用户 使用卡券种类 使用卡券数量
+数据源 4: 
+    积分结算价 积分发行量
+数据源 5:
+    卡券结算价 卡券发行量
+end note
+@endUML
+
+@startUML
+scale 3
+title 其它支持性用户用例
+left to right direction
+rectangle 积分卡券系统 {
+    together {
+    (uc012 昵称设置) as uc012
+    (uc013 修改密码) as uc013
+    (uc014 绑定手机号) as uc014
+    (uc015 退出登录) as uc015
+    (uc016 解除绑定) as uc016
+    (uc017 日志记录) as uc017
+    }
+}
+:用户: as user
+user --> uc012
+user --> uc013
+user --> uc014
+user --> uc015
+user --> uc016
+user --> uc017
+
+@endUML
+
+@startUML
+scale 1
+title 后台管理员用例
+left to right direction
+rectangle 积分卡券系统{
+    (uc005 生成积分) as uc005
+    (uc006 生成卡券) as uc006
+    (uc018 管理积分) as uc018
+    (uc019 管理卡券) as uc019
+    (uc020 管理商家) as uc020
+    (uc021 订单管理) as uc021
+    (uc022 用户管理) as uc022
+    (uc023 修改卡券) as uc023
+    (uc024 删除卡券) as uc024
+    (uc025 增加商家) as uc025
+    (uc026 删除商家) as uc026
+    (uc027 修改商家) as uc027
+    (uc028 管理购买卡券订单) as uc028
+    (uc029 管理使用卡券订单) as uc029
+    (uc030 增加购买卡券订单) as uc030
+    (uc031 修改购买卡券订单) as uc031
+    (uc032 删除购买卡券订单) as uc032
+    (uc033 增加卡券使用订单) as uc033
+    (uc034 修改卡券使用订单) as uc034
+    (uc035 删除卡券使用订单) as uc035
+    (uc036 积分结算) as uc036
+    (uc037 卡券结算) as uc037
+    (uc038 规则管理) as uc038
+    together {
+    (uc039 积分发放规则管理) as uc039
+    (uc040 增加积分发放规则) as uc040
+    (uc041 修改积分发放规则) as uc041
+    (uc042 删除积分发放规则) as uc042
+    }
+    together {
+    (uc043 卡券推荐规则管理) as uc043
+    (uc044 增加卡券推荐规则) as uc044
+    (uc045 修改卡券推荐规则) as uc045
+    (uc046 删除卡券推荐规则) as uc046
+    }
+    together {
+    (uc047 积分结算规则管理) as uc047
+    (uc048 增加积分结算规则) as uc048
+    (uc049 修改积分结算规则) as uc049
+    (uc050 删除积分结算规则) as uc050
+    }
+    together {
+    (uc051 卡券结算规则管理) as uc051
+    (uc052 增加卡券结算规则) as uc052
+    (uc053 删除卡券结算规则) as uc053
+    (uc057 修改卡券结算规则) as uc057
+    }
+    (uc054 增加用户) as uc054
+    (uc055 修改用户) as uc055
+    (uc056 删除用户) as uc056
+}
+:管理员: as admin
+
+admin --> uc018
+admin --> uc019
+admin --> uc020
+admin --> uc021
+admin --> uc022
+admin --> uc038
+
+uc018 --> uc005
+uc018 --> uc036
+
+uc019 --> uc006
+uc019 --> uc023
+uc019 --> uc024
+uc019 --> uc037
+
+uc020 --> uc025
+uc020 --> uc026
+uc020 --> uc027
+
+uc021 --> uc028
+uc021 --> uc029
+
+uc028 --> uc030
+uc028 --> uc031
+uc028 --> uc032
+
+uc029 --> uc033
+uc029 --> uc034
+uc029 --> uc035
+
+uc022 --> uc054
+uc022 --> uc055
+uc022 --> uc056
+
+uc038 --> uc039
+uc038 --> uc043
+uc038 --> uc047
+uc038 --> uc051
+
+uc039 --> uc040
+uc039 --> uc041
+uc039 --> uc042
+
+uc043 --> uc044
+uc043 --> uc045
+uc043 --> uc046
+
+uc047 --> uc048
+uc047 --> uc049
+uc047 --> uc050
+
+uc051 --> uc052
+uc051 --> uc053
+uc051 --> uc057
+@endUML
+
+@startUML
+scale 2 
+title 分析模型用例
+rectangle 积分卡券系统 {
+    rectangle fx as "分析模型"
+    (uc004 数据收集) as uc004
+    (uc007 盈利分析) as uc007
+    (uc008 积分定价) as uc008
+    (uc009 卡券定价) as uc009
+    (uc010 使用引导) as uc010
+    (uc011 推荐卡券) as uc011
+    (uc017 用户行为记录) as uc017
+}
+uc004 --> fx: 数据输入
+uc017 --> fx: 数据输入
+fx --> uc007: 分析输出
+fx --> uc010: 分析输出
+fx --> uc011: 分析输出
+uc007 --> uc008
+uc007 --> uc009
+
+@endUML
+@startUML
+scale 3
+title uc000用户登录流程图
+start
+fork
+    :用户进入积分卡券系统;
+    if (是否已注册账号) then (是)
+        :用户登录积分卡券系统;
+        :进入积分卡券系统首页;
+        stop
+    else (否)
+    endif
+fork again
+    :用户从商家系统跳转积分卡券系统;
+    if (商家系统是否提供唯一标识) then (提供)
+        if (该唯一标识是否有用户账号与之关联) then (有)
+            :以关联的用户账号登录系统;
+            :显示用户积分余额;
+            stop
+        else (没有)
+        endif
+    else (未提供)
+    stop
+    endif
+end fork
+:进入用户注册页面;
+:用户完成注册;
+:用户关联商户;
+stop
+@endUML
+
+@startuML
+scale 3
+title uc000用户登录用例扩展与包含
+(uc000 用户登录) as uc000
+(uc000_1 用户注册登录) as uc000_1
+(uc000_2 用户跳转登录) as uc000_2
+(uc000_3 用户跳转注册登录) as uc000_3
+(uc000_4 用户账户关联) as uc000_4
+(uc000_4_1 用户批量关联) as uc000_4_1
+(uc000_4_2 用户手动关联) as uc000_4_2
+
+uc000 --> uc000_1: 扩展
+uc000 --> uc000_2: 扩展
+uc000 --> uc000_3: 扩展
+uc000_1 --> uc000_4: 包含
+uc000_3 --> uc000_4: 包含
+uc000_4 --> uc000_4_1: 扩展
+uc000_4 --> uc000_4_2: 扩展
+@endUML
+
+@startUML
+scale 3
+title uc000_4_1用户批量关联流程图
+start
+:1. 用户登录积分卡券平台;
+:2. 用户操作批量关联;
+:3. 积分卡券平台查询可批量关联且未关联的商家;
+:4. 积分卡券平台生成批量关联列表;
+repeat
+:5. 从列表中取出一个商家;
+:6. 积分卡券平台调用商家平台 [批量关联接口] ;
+if (7. 是否关联成功) then (是)
+:7.1.1 返回用户商家标识;
+:7.1.2 将用户商家标识与用户积分卡券系统标识进行关联;
+else (否)
+:7.2.1 返回关联失败消息;
+endif
+repeat while (列表中是否还有商家) is (有)
+:显示批量关联结果;
+stop 
+@endUML
+
+@startUML
+scale 3
+title uc000_4_2用户手动关联流程图
+start
+:1. 用户登录积分卡券平台;
+:2. 用户选择未关联商家;
+:3. 用户操作手动关联;
+:4. 积分卡券系统调用 [手动关联接口] ;
+:5. 商家积分返回身份验证页面;
+if (6.1 用户身份验证成功) then (是)
+:6.1.1 商家系统返回用户商家标识;
+:6.1.2 积分卡券系统将用户商家标识与用户积分卡券系统标识进行关联;
+:6.1.3 提示关联成功;
+stop
+elseif (6.2 用户身份验证失败) then (是)
+:6.2.1 商家系统返回用户身份验证失败;
+:6.2.2 进示关联失败;
+stop
+else (6.3 身份验证超时)
+:6.3.1 结果用户身份验证;
+:6.3.2 提示关联操作超时;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc000用户登录类图
+class 001 as "用户" <cl001>
+class 002 as "商家" <cl003>
+class 003 as "用户关联关系" <cl002>
+class 004 as "批量关联商家列表" <cl005>
+class 005 as "未关联商家列表" <cl004>
+
+001 : id
+001 : 用户名
+001 : 密码
+001 : 用户积分卡券系统唯一标识
+001 : 登录状态
+001 : ...
+001 : 注册()
+001 : 登录()
+001 : 用户跳转登录()
+001 : 批量关联()
+001 : 手动关联()
+001 : {method}...
+
+002 : id
+002 : 商家名称
+002 : 商家唯一标识
+002 : 是否可批量关联
+002 : ...
+002 : {method}...
+
+003 : id
+003 : 用户id
+003 : 用户积分卡券系统唯一标识
+003 : 商家id
+003 : 商家唯一标识
+003 : 查询标识()
+003 : 账号关联()
+003 : 创建未关联商家()
+
+004 : id
+004 : 商家id
+004 : ...
+004 : 取出商家()
+004 : {method}...
+
+005 : id
+005 : 商家id
+005 : 创建批量关联商家列表()
+
+
+001 "1" - "*" 003: 关联 >
+003 "*" - "1" 002: 关联 <
+002 "*" --o "1" 004: 包含 <
+003 "1" -- "1" 005: 创建 >
+005 "1" - "1" 004: 创建 >
+@endUML
+
+@startUML
+scale 3
+title uc000用户登录时序图
+actor 用户 as user
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+end box 
+
+autoNumber
+user -> sys: 用户登录
+activate sys
+sys -> c_user: 登录()
+activate c_user
+c_user --> sys: 返回消息: 登录成功
+deactivate c_user
+sys -> sys: 显示首页
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc000_1用户注册登录时序图
+actor 用户 as user 
+box "积分卡券系统"
+participant 积分卡券系统 as sys 
+participant 用户 as c_user
+
+autoNumber
+user -> sys: 注册
+activate sys
+sys -> c_user: 注册()
+activate c_user
+c_user -> c_user: 登录()
+activate c_user
+c_user --> c_user: 返回消息: 登录成功
+deactivate c_user
+c_user --> sys: 返回消息: 注册成功
+deactivate c_user
+sys -> sys: 显示首页
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc000_2用户跳转登录时序图
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 用户关联关系 as bs
+end box
+
+autoNumber
+b_sys -> sys: 调用 [登录接口]
+note left
+登录接口传入参数:
+    商家唯一标识
+    用户商家唯一标识
+end note
+activate sys
+sys -> c_user: 跳转登录()
+activate c_user
+c_user -> bs: 查询标识()
+activate bs
+bs --> c_user: 返回消息: 标识存在
+deactivate bs
+c_user --> sys: 登录成功
+deactivate c_user
+sys -> sys: 显示首页
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc000_3用户跳转注册登录时序图
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 用户关联关系 as bs
+end box
+
+autoNumber
+b_sys -> sys: 调用 [登录接口]
+activate sys
+note left
+登录接口传入参数:
+    商家唯一标识
+    用户商家唯一标识
+end note
+sys -> c_user: 跳转登录()
+activate c_user
+c_user -> bs: 查询标识()
+activate bs
+bs --> c_user: 返回消息: 标识不存在
+deactivate bs
+c_user -> c_user: 注册()
+activate c_user
+c_user --> c_user: 返回消息: 注册成功
+deactivate c_user
+c_user -> bs: 账号关联()
+activate bs
+bs --> c_user: 返回消息: 关联成功
+deactivate bs
+c_user --> sys: 返回消息: 登录成功
+deactivate c_user
+sys -> sys: 显示首页
+deactivate sys 
+@endUML
+
+@startUML
+scale 3
+title uc000_4_1用户批量关联时序图
+actor 用户 as user
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 用户关联关系 as bs
+participant 用户未关联商家 as wg
+participant 批量关联商家列表 as pl
+end box
+
+autoNumber
+user -> sys: 批量关联
+activate sys
+sys -> c_user: 批量关联()
+activate c_user
+c_user -> bs: 创建用户未关联商家()
+activate bs
+create wg
+bs -> wg: 创建对象
+bs --> c_user: 返回消息: 创建成功
+deactivate bs
+c_user -> wg: 创建批量关联商家列表()
+activate wg
+create pl
+wg -> pl: 创建对象()
+wg --> c_user: 返回消息: 创建成功
+deactivate wg
+loop 尚有未取出的商家
+c_user -> pl: 取出商家()
+activate pl
+pl --> c_user: 返回消息()
+deactivate pl
+c_user -> b_sys: 调用 [批量关联接口]
+note left
+接口传入数据:
+    用户电话号码
+接口返回数据:
+    用户电话号码
+end note
+b_sys --> c_user: 返回消息: 用户唯一标识
+c_user -> bs: 账号关联()
+activate bs
+bs --> c_user: 返回消息: 关联成功
+deactivate bs
+end
+c_user --> sys: 返回消息: 批量关联结果
+deactivate c_user
+sys -> sys: 显示批量关联结果
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc000_4_2用户手动关联时序图
+actor 用户 as user
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 用户关联关系 as bs
+
+autoNumber
+user -> sys: 手动关联
+activate sys
+sys -> c_user: 手动关联()
+activate c_user
+c_user -> b_sys: 调用 [用户身份验证接口]
+b_sys -> user: 用户身份界面
+user -> b_sys: 完成用户身份验证
+b_sys --> c_user: 返回消息: 用户商家唯一标识
+c_user -> bs: 账户关联()
+activate bs
+bs --> c_user: 返回消息: 关联成功
+deactivate bs
+c_user --> sys: 返回消息: 关联成功
+deactivate c_user
+sys -> sys: 显示关联成功
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc001获取积分流程图
+start
+:1. 用户在商家消费产生消费订单;
+:2. 用户在商家订单页面查看未领取积分的订单;
+:3. 用户操作发送该订单领取积分;
+:4. 商家系统调用积分卡券系统 [发送订单返积分接口];
+if (5. 查询该消费订单是否存在) then (是)
+if (5.1 查询该消费订单是否已发积分) then (是)
+:5.1.1.1 返回消息该订单已发积分;
+stop
+else (否)
+:5.1.2.1 查询积分发放规则;
+:5.1.2.2 创建积分发放订单;
+:5.1.2.3 发放积分;
+:5.1.3.4 返回消费积分发放成功;
+stop 
+endif
+else (否)
+:5.2.1 返回消息该消息订单不存在;
+stop
+@endUML
+
+
+@startUML
+scale 3
+title uc001获取积分用例扩展
+(uc001 获取积分) as uc001
+(uc001_1 用户批量发送订单) as uc001_1
+(uc001_2 商家系统自动发送订单) as uc001_2
+(uc001_3 用户账号关联) as uc001_3
+
+uc001 --> uc001_1: 扩展点: 步骤3
+uc001 --> uc001_2: 扩展点: 步骤2
+uc001_3 --> uc001_2: 依赖
+@endUML
+
+@startUML
+scale 3
+title uc001_1用户批量发送订单流程图
+start
+:1. 用户批量选择未领取积分的订单;
+:2. 用户操作批量改善订单领取积分;
+:3. 用户系统调用积分卡券系统 [批量发送订单返积分接口] ;
+repeat
+if (4. 查询该消费订单是否存在) then (是)
+if (4.1 查询该消费订单是否已发积分) then (是)
+:4.1.1.1 返回消息该订单已发积分;
+else (否)
+:4.1.2.1 查询积分发放规则;
+:4.1.2.2 创建积分发放订单;
+:4.1.2.3 发放积分;
+:4.1.3.4 返回消费积分发放成功;
+endif
+else (否)
+:4.2.1 返回消息该消息订单不存在;
+endif
+repeat while (5. 是否还有剩余订单)
+stop
+@endUMl
+
+@startUML
+scale 3
+title uc001_2商家自动发送订单流程图
+start
+-> 前置条件: 用户关联商家账号与积分卡券系统账号;
+:1. 商家系统调用积分卡券系统 [发送订单返回积分接口] ;
+:以下步骤同 uc001 步骤5-5.2.1;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc001获取积分类图
+together {
+class 001 as "用户" <cl001>
+class 009 as "用户关联关系" <cl002>
+class 003 as "积分账户" <cl006>
+class 006 as "积分" <cl007>
+class 007 as "积分发放订单" <cl008>
+class 002 as "商家" <cl009>
+}
+class 005 as "积分发放规则" <cl009>
+class 004 as "消费订单" <cl010>
+class 008 as "批量发放消费订单列表" <cl011>
+
+001 : id
+001 : 积分账户id
+001 : ...
+001 : {method}...
+
+
+002 : ...
+002 : {method}...
+002 : 发放积分()
+002 : 批量发放积分()
+
+003 : id
+003 : 用户id
+003 : 积分id
+003 : 积分余额
+003 : ...
+003 : 增加积分()
+003 : {method}...
+
+004 : id
+004 : 商家id
+004 : 用户id
+004 : 商家订单id
+004 : 积分发放状态
+004 : 查询商家订单()
+
+005 : id
+005 : 商家id
+005 : 规则类型
+005 : 判断项目
+005 : 判断值
+005 : 影响类型
+005 : 影响值
+005 : 叠加类型
+005 : 叠加对象
+005 : 组
+005 : 计算积分发放值()
+
+007 : id
+007 : 商家id
+007 : 消费订单id
+007 : 用户id
+007 : 积分id
+007 : 发放数量
+007 : 订单状态
+
+008 : id
+008 : 商家id
+008 : 用户id
+008 : 商家订单id
+008 : 取出订单()
+
+
+003 -o 001: 包含 <
+001 "1" - "*" 009: 关联 >
+009 "*" - "1" 002: 关联 <
+003 o-- 006: 包含 >
+002 -- 006: 发放 >
+(006,002) . 005: 依据 >
+005 - 004: 依据 >
+002 -- 007: 创建 >
+007 o-- 006: 包含 <
+008 --o 004: 包含 >
+002 - 008: 创建 >
+@endUML
+
+@startUML
+scale 3
+title uc001获取积分时序图
+actor 用户 as user
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 商家 as bus
+participant 积分账户 as jz
+participant 积分发放规则 as jg
+participant 消费订单 as xd
+participant 积分发放订单 as jd
+end box
+
+autoNumber
+user -> b_sys: 消费
+b_sys -> b_sys: 产生订单
+user -> b_sys: 发送订单获取积分
+b_sys -> sys: 调用 [传订单发放积分接口]
+note left
+接口传入参数:
+    商家订单id 用户商家唯一标识
+接口返回参数:
+    积分发放详情
+end note
+activate sys
+sys -> bus: 发放积分()
+activate bus
+bus -> jd: 创建积分发放订单
+bus -> b_sys: 调用 [查询积分接口]
+note left
+接口传入参数:
+    商家订单id
+接口返回参数:
+    订单详情
+end note 
+b_sys --> bus: 返回消息: 订单详情
+bus -> jd: 修改订单状态: 商家核实
+bus -> xd: 查询消费订单()
+activate xd
+xd --> bus: 返回消息: 该订单未发放积分
+deactivate xd
+bus -> jd: 修改订单状态: 系统核实
+bus -> jg: 计算积分发放数量()
+activate jg
+jg -> bus: 返回消息: 积分发放数量
+deactivate jg
+bus -> jd: 修改订单状态: 确定金额
+bus -> jz: 增加积分()
+activate jz
+jz --> bus : 返回消息: 积分发放成功
+deactivate jz
+bus -> jd: 修改订单状态: 订单完成
+bus --> sys: 返回消息: 积分发放详情
+deactivate bus
+sys --> b_sys: 返回消息: 积分发放详情
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc001_1用户批量发送订单时序图
+actor 用户 as user
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys 
+participant 商家 as bus
+participant 批量发放消费订单列表 as pf
+end box
+
+autoNumber
+user -> b_sys: 选择多个订单发送订单获取积分
+b_sys -> sys: 调用 [批量发送订单获取积分接口]
+note left
+接口传入参数:
+    用户商家唯一标识 商家订单列表
+接口返回参数:
+    积分发放详情
+end note 
+activate sys
+sys -> bus: 批量发放积分()
+activate bus
+create pf
+bus -> pf: 创建对象
+loop 批量发放消费订单列表尚有未取出的订单
+bus -> pf: 取出订单()
+activate pf
+pf --> bus: 返回消息: 商家订单id
+deactivate pf
+bus -> bus: 积分发放()
+activate bus
+bus --> bus: 返回消息: 积分发放结果
+deactivate bus
+end
+deactivate pf
+bus --> sys: 返回消息: 积分发放详情
+deactivate bus
+sys --> b_sys: 返回消息: 积分发放详情
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc001_2商家自动发送订单时序图
+actor 用户 as user
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys 
+participant 商家 as bus
+end box 
+
+autoNumber
+user -> b_sys: 用户消费
+b_sys -> b_sys: 完成消费订单
+b_sys -> sys: 调用 [传订单发放积分接口]
+activate sys
+sys -> bus: 发放积分()
+activate bus
+bus -->sys: 返回消息: 积分发放详情
+deactivate bus
+sys --> b_sys: 返回消息: 积分发放详情
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc002购买卡券流程图
+:1. 用户进入卡券商城;
+:2. 用户选择卡券;
+:3. 用户进入卡券详情页面;
+:4. 用户操作购买卡券;
+:5. 积分卡券系统生成卡券购买订单;
+if (6.1 商家卡券库存是否足够) then (否)
+:6.1.1 提示卡券库存不足购买失败;
+stop
+elseif (6.2 用户余额是否足够) then (否)
+:6.2.1 提示用户余额不足购买失败;
+stop
+else (6.3 卡券库存足够且用户余额足够)
+:6.3.1 用户购买成功;
+:6.3.2 用户卡券账户增加, 用户积分账户减少;
+:6.3.3 商家卡券库存减少;
+stop
+@endUML
+
+@startuML
+scale 3
+title uc002购买卡券用例扩展
+(uc002 购买卡券) as uc002
+(uc002_1 根据推荐购买卡券) as uc002_1
+(uc011 卡券推荐) as uc011
+(uc002_2 根据订单支付) as uc002_2
+
+uc002 --> uc002_1: 扩展
+uc011 <-- uc002_1: 依赖
+uc002 --> uc002_2: 扩展
+uc002_1 --> uc002_2: 扩展
+
+@endUML
+
+@startUML
+scale 3
+title uc002_1根据推荐购买卡券流程图
+start
+:1. 积分卡券系统向用户推荐卡券;
+:2. 用户打开推荐消息;
+:3. 用户进入推荐卡券详情页面;
+:以下步骤同 uc002 用例的 4 至 6.3.3 步骤;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc002购买卡券类图
+class 001 as "用户" <cl001>
+class 002 as "商家" <cl003>
+class 003 as "积分" <cl007>
+class 004 as "卡券" <cl013>
+class 005 as "卡券仓库" <cl014>
+class 006 as "卡券账户" <cl012>
+class 007 as "推荐消息" <cl015>
+class 008 as "积分账户" <cl006>
+class 010 as "购买卡券订单" <cl018>
+class 011 as "推荐规则" <cl016>
+class 012 as "触发条件" <cl017>
+class 013 as "货品清单" <cl029>
+class 014 as "对象画像" <cl030>
+
+001 : ...
+001 : {method}...
+001 : 下单()
+001 : 支付()
+
+002 : ...
+002 : 卡券仓库id
+002 : {method}...
+
+003 : ...
+003 : 积分价格
+003 : 查询积分价格()
+003 : {method}...
+
+004 : id
+004 : 卡券名称
+004 : 卡券简介
+004 : 卡券价格
+004 : ...
+004 : 查询卡券()
+004 : {method}...
+
+005 : id
+005 : 商家id
+005 : 卡券id 
+005 : 卡券库存
+005 : 库存查询()
+005 : 库存减少()
+
+006 : id
+006 : 用户id
+006 : 卡券id 
+006 : 卡券余额
+006 : ...
+006 : 查询卡券账户()
+006 : 增加卡券()
+006 : 查询我的卡券()
+006 : {method}...
+
+007 : id
+007 : 推荐卡券id
+007 : 推荐内容
+007 : 打开推荐卡券()
+007 : 发送推荐卡券消息()
+
+008 : id
+008 : 用户id
+008 : 积分id
+008 : 积分余额
+008 : ...
+008 : 查询积分账户()
+008 : 增加余额()
+008 : {method}...
+
+010 : id
+010 : 货品清单id
+010 : 积分id
+010 : 应付金额
+010 : 实付金额
+010 : 备注信息
+010 : 订单状态
+010 : ...
+010 : 查询订单()
+011 : 支付()
+010 : {method}...
+
+011 : id
+011 : 触发条件id
+011 : 推荐卡券id
+011 : 推荐内容
+011 : 对象画像id
+011 : 创建推荐消息()
+011 : 监视触发条件()
+
+012 : id
+012 : 判断项目
+012 : 判断方式
+012 : 判断值
+012 : 组
+012 : 判断条件()
+
+013 : id
+013 : 卡券id
+
+014 : id
+014 : 用户特性
+
+001 -- 002: 购买卡券 >
+007 . (001,002)
+001 --o 010: 包含 <
+003 --o 010: 包含 <
+010 o-- 013: 包含 >
+004 -o 013: 包含 <
+011 o-- 014: 包含 >
+001 o- 006
+001 o- 008
+008 o- 003
+002 o- 005
+005 o- 004
+007 -- 011: 创建 <
+011 -- 012: 依赖 >
+006 o-- 004: 包含 >
+@endUML
+
+@startUML
+scale 3
+title uc002购买卡券时序图
+actor 用户 as user
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 卡券库存 as kk
+participant 积分账户 as jz
+participant 卡券账户 as kz
+participant 购买订单 as gd
+end box
+
+autoNumber
+user -> sys: 购买卡券()
+activate sys
+sys -> c_user: 下单()
+activate c_user
+c_user -> kk: 查询卡券库存()
+activate kk
+kk --> c_user: 返回消息: 卡券库存
+deactivate kk
+c_user -> gd: 创建购买订单
+c_user -> sys: 返回消息: 下单成功, 订单编号
+deactivate c_user
+sys -> c_user: 支付()
+activate c_user
+c_user -> gd: 查询订单()
+activate gd
+gd -> c_user: 返回消息: 订单详情
+deactivate gd
+c_user -> jz: 查询余额()
+activate jz
+jz --> c_user: 返回消息: 积分余额
+deactivate jz
+c_user -> gd: 修改状态：核实余额
+c_user -> jz: 扣减余额()
+activate jz
+jz --> c_user: 返回消息: 扣减积分成功
+deactivate jz
+c_user -> gd: 修改订单: 扣款成功
+c_user -> kk: 扣减库存()
+activate kk
+kk --> c_user: 返回消息: 扣减库存成功
+deactivate kk
+c_user -> gd: 修改订单: 出库成功
+c_user -> kz: 增加卡券()
+activate kz
+kz --> c_user: 返回消息: 增加卡券成功
+deactivate kz
+c_user -> gd: 修改订单状态: 订单完成
+c_user --> sys: 返回消息: 支付成功
+deactivate c_user
+sys --> sys: 显示购买结果
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc002_1根据推荐购买卡券时序图
+actor 用户 as user
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 推荐规则 as tg
+participant 触发条件 as ct
+participant 推荐消息 as tx
+end box
+
+autoNumber
+loop 
+tg -> tg: 监视触发条件()
+activate tg
+tg -> ct: 判断条件()
+activate ct
+ct --> tg: 返回消息: 判断结果
+deactivate ct
+end
+create tx
+tg -> tx: 创建对象
+deactivate tg
+tx -> tx: 发送消息()
+activate tx
+tx -> sys: 推送推荐
+user -> sys: 打开推荐
+sys -> tx: 打开推荐()
+tx --> sys: 返回消息: 推荐卡券详情页面
+deactivate tx
+user -> sys: 购买卡券
+sys -> c_user: 购买卡券()
+activate c_user
+c_user --> sys: 返回消息: 购买结果
+deactivate c_user
+@endUML
+
+@startUML
+scale 3
+title uc003使用卡券流程图
+start
+:1. 用户打开积分卡券系统;
+:2. 用户进入我的卡券页面;
+:3. 用户选择要使用的卡券;
+:4. 积分卡券系统显示卡券二维码;
+:5. 商家系统扫描用户显示二维码;
+if (6.1 用户我的卡券余额是否足够) then (是)
+:6.1.1 生成卡券使用订单;
+:6.1.1 扣减用户卡券余额;
+:6.1.2 提示卡券使用成功;
+else (否)
+:6.2.1 提示用户卡券使用失败;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc003使用卡券用例图扩展
+(uc003 使用卡券) as uc003
+(uc003_1 根据引导使用卡券) as uc003_1
+(uc010 使用引导) as uc010
+uc003 --> uc003_1: 扩展
+uc010 <-- uc003_1: 依赖
+@endUML
+
+@startUML
+scale 3
+title uc003_1根据引导使用卡券流程图
+start
+:用户打开使用引导消息;
+:用户从引导消费跳转使用卡券页面;
+:以下步骤同 uc003 的 4 至 6.2.1 步骤;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc003使用卡券类图
+class 001 as "用户" <cl001>
+class 002 as "卡券账户" <cl012>
+class 003 as "卡券" <cl013>
+class 004 as "商家" <cl003>
+class 006 as "卡券二维码" <cl019>
+class 007 as "卡券使用订单" <cl022>
+class 008 as "引导消息" <cl020>
+class 009 as "引导规则" <cl021>
+class 010 as "触发条件" <cl017>
+class 011 as "对象画像" <cl030>
+class 012 as "货品清单" <cl029>
+
+001 : ...
+001 : {method}...
+001 : 使用卡券()
+
+002 : ...
+002 : {method}...
+002 : 查询卡券余额()
+002 : 扣减卡券()
+002 : 创建二维码()
+
+004 : ...
+004 : {method}...
+004 : 核销卡券()
+
+006 : id
+006 : 卡券id
+006 : 用户商家标识
+006 : 创建时间
+006 : 状态
+006 : ...
+006 : 获取卡券核销信息()
+006 : 失效()
+
+007 : id
+007 : 商家id
+007 : 用户id
+007 : 卡券id
+007 : 备注信息
+007 : 订单状态
+
+008 : id
+008 : 引导卡券id
+008 : 引导内容
+008 : 发送引导使用消息()
+008 : 打开使用卡券详情页面()
+
+009 : id
+009 : 触发条件id
+009 : 引导卡券
+009 : 引导内容
+009 : 创建引导消息()
+009 : 监控触发条件()
+
+010 : id
+010 : 判断项目
+010 : 判断条件
+010 : 判断方式
+010 : 组
+010 : 判断条件()
+
+001 -- 004: 使用卡券 >
+008 . (001,004): 引导使用
+008 -- 009: 创建 <
+009 -- 010: 依赖 >
+009 o-- 011: 包含 >
+001 o- 002: 包含 >
+002 -- 006: 创建 >
+002 o- 003: 包含 >
+007 o-- 001: 包含 >
+012 o-- 007: 包含 >
+012 o-- 003: 包含 >
+004 - 006: 核销 >
+@endUML
+
+@startUML
+scale 3
+title uc003使用卡券时序图
+actor 用户 as user
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 商家 as bus
+participant 卡券账户 as kz
+participant 卡券二维码 as kr
+participant 使用卡券订单 as sd
+end box
+
+autoNumber
+user -> sys: 使用卡券
+activate sys
+sys -> c_user: 使用卡券()
+activate c_user
+c_user -> sd: 创建使用卡券订单
+c_user -> kz: 查询卡券()
+activate kz
+kz --> c_user: 返回消息: 卡券余额
+deactivate kz
+c_user -> kz: 创建二维码()
+activate kz
+create kr
+kz -> kr: 创建对象
+kz --> c_user: 返回消息: 二维码id
+deactivate kz
+c_user -> sd: 修改订单状态: 创建二维码
+c_user --> sys: 返回消息: 二维码id
+deactivate c_user
+sys -> sys: 显示二维码
+deactivate sys
+b_sys -> sys: 扫描二维码
+sys -> kr: 获取二维码信息()
+activate kr
+kr --> sys: 返回消息: 二维码信息
+deactivate kr
+sys --> b_sys: 返回消息: 二维码信息
+b_sys -> sys: 调用 [核销卡券接口]
+activate sys
+sys -> bus: 核销卡券()
+activate bus
+bus -> sd: 修改订单状态: 开始核销
+bus -> kz: 查询卡券余额()
+activate kz
+kz --> bus: 返回消息: 卡券余额
+deactivate kz
+bus -> sys: 推送确认消息
+bus -> sd: 修改订单状态: 待确认
+user -> sys: 确认
+sys --> bus: 返回消息: 用户确认
+bus -> sys: 修改订单状态: 已确认
+bus -> kz: 扣减卡券()
+activate kz
+kz --> bus: 返回消息: 扣减成功
+deactivate kz
+bus -> sd: 修改订单状态: 订单完成
+bus --> sys: 返回消息: 核售成功
+deactivate bus
+sys --> b_sys: 返回消息: 核销成功
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc003_1根据引导使用卡券时序图
+actor 用户 as user
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 用户 as c_user
+participant 引导规则 as yg
+participant 触发条件 as ct
+participant 引导消息 as yx
+end box
+
+autoNumber
+loop
+yg -> yg: 监视触发条件()
+activate yg
+yg -> ct: 判断条件()
+activate ct
+ct --> yg: 返回消息: 判断结果
+deactivate ct
+end
+create yx
+yg -> yx: 创建对象
+deactivate yg
+yx -> yx: 发送引导使用消息()
+activate yx
+yx -> sys: 推送引导消息
+user -> sys: 打开引导
+sys -> yx: 打开使用卡券详情页面()
+yx --> sys: 返回消息: 使用卡券详情页面
+deactivate yx
+user -> sys: 使用卡券
+activate sys
+sys -> c_user: 使用卡券()
+activate c_user
+c_user --> sys: 返回消息: 二维码id
+deactivate c_user
+sys -> sys: 显示二维码
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc006生成卡券流程图
+start
+:管理员创建卡券;
+:管理员请求商家确认卡券;
+:积分卡券系统调用商家确认卡券接口;
+:商家系统返回确认结果;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc006生成卡券类图
+class 001 as "卡券" <cl003>
+
+001 : 状态
+001 : ...
+001 : 确认卡券()
+001 : 创建卡券()
+@endUML
+
+@startUML
+scale 3
+title uc006生成卡券时序图
+actor 管理员 as admin
+participant 商家系统 as b_sys
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 卡券 as car
+end box
+
+admin -> sys: 创建卡券
+activate sys
+sys -> car: 创建卡券()
+activate car
+car --> sys: 返回消息: 创建成功
+deactivate car
+sys --> sys: 显示卡券创建成功
+deactivate sys
+admin -> sys: 确认卡券
+activate sys
+sys -> car: 确认卡券()
+activate car
+car -> car: 修改卡券状态: 待确认
+car -> b_sys: 调用 [确认卡券接口]
+note left
+接口传入参数
+    卡券详情
+接口返回参数:
+    确认结果
+end note 
+b_sys --> car: 返回消息: 确认成功
+car -> car: 修改卡券状态: 已确认
+car --> sys: 返回消息: 确认成功
+deactivate car
+sys -> sys: 显示卡券确认结果
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc036积分结算流程图
+start
+repeat
+:积分结算规则判断结算周期;
+repeat while (周期是否到达) is (未到达)
+:积分结算规则查询积分发放订单;
+:积分结算规则生成积分结算订单;
+:管理员通知商家管理员进行结算;
+:商家管理员线下打款;
+:管理员线下核实;
+:管理员修改积分结算订单;
+stop
+@endUML
+
+@startUML
+scale 3
+title uc036积分结算类图
+class 001 as "积分结算规则" <cl023>
+class 002 as "积分发放订单" <cl008>
+class 003 as "积分结算订单" <cl024>
+class 004 as "可结算积分发放订单" <cl025>
+
+001 : id
+001 : 商家id
+001 : 结算周期
+001 : 结算价格
+001 : ...
+001 : 监控结算周期()
+001 : {method}...
+
+002 : id
+002 : 状态
+002 : ...
+002 : 查询可结算积分发放订单()
+002 : {method}...
+
+003 : id
+003 : 可结算订单id
+003 : 金额
+003 : 状态
+
+004 : id
+004 : 结算周期
+004 : 积分发放订单id
+004 : ...
+
+001 - 002: 查询 >
+001 -- 003: 创建 >
+001 -- 004: 创建 >
+003 - 004: 依据 >
+@endUML
+
+@startUML
+scale 3
+title uc036积分结算时序图
+actor 管理员 as admin
+actor 商家管理员 as b_admin
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 积分结算规则 as jjg
+participant 积分发放订单 as jfd
+participant 积分结算订单 as jjd
+participant 可结算积分发放订单 as kjd
+end box
+
+autoNumber
+loop 结算周期是否到达
+jjg -> jjg: 判断积分发放规则
+activate jjg
+end
+jjg --> jjg: 返回消息: 积分结算周期到达
+activate jjg
+jjg -> jfd: 查询可结算积分发放订单()
+activate jfd
+jfd --> jjg: 返回消息: 可结算积分发放订单()
+deactivate jfd
+create kjd
+jjg -> kjd: 创建对象
+create jjd
+jjg -> jjd: 创建对象
+jjg -> sys: 提示管理员进行结算
+deactivate jjg
+deactivate jjg
+admin -> b_admin: 提示商家管理员打款
+b_admin -> b_admin: 打款
+admin -> admin: 核实打款
+admin -> sys: 修改积分结算订单
+activate sys
+sys -> jjd: 修改订单状态: 已结算
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title uc037卡券结算
+start
+repeat
+:卡券结算规则判断结算周期;
+repeat while (结算周期是否到达) is (否)
+:卡券结算规则查询卡券使用订单;
+:卡券结算规则生成卡券结算订单;
+:积分卡券系统提示管理员进行结算;
+:管理员线下与商家核实可结算卡券使用订单;
+:管理员线下打款;
+:商家管理员线下核实;
+:商家管理员修改卡券结算订单;
+stop
+@endUML
+
+
+@startUML
+scale 3
+title uc037卡券结算类图
+class 001 as "卡券结算规则" <cl026>
+class 002 as "卡券使用订单" <cl022>
+class 003 as "卡券结算订单" <cl027>
+class 004 as "可结算卡券使用订单" <cl028>
+
+001 : id
+001 : 商家id
+001 : 结算周期
+001 : ...
+001 : 监控结算周期()
+001 : {method}...
+
+002 : id
+002 : 状态
+002 : ...
+002 : 查询可结算卡券使用订单()
+002 : {method}...
+
+003 : id
+003 : 可结算订单id
+003 : 金额
+003 : 状态
+
+004 : id
+004 : 结算周期
+004 : 卡券使用订单id
+004 : ...
+
+001 - 002: 查询 >
+001 -- 003: 创建 >
+001 -- 004: 创建 >
+003 - 004: 依据 >
+@endUML
+
+@startUML
+scale 3
+title uc037卡券结算时序图
+actor 管理员 as admin
+actor 商家管理员 as b_admin
+box "积分卡券系统"
+participant 积分卡券系统 as sys
+participant 卡券结算规则 as jjg
+participant 卡券使用订单 as jfd
+participant 卡券结算订单 as jjd
+participant 可结算卡券使用订单 as kjd
+end box
+
+autoNumber
+loop 结算周期是否到达
+jjg -> jjg: 监控结算周期()
+activate jjg
+end
+jjg --> jjg: 返回消息: 结算周期到达
+activate jjg
+jjg -> jfd: 查询可结算卡券使用订单()
+activate jfd
+jfd --> jjg: 返回消息: 可结算卡券使用订单()
+deactivate jfd
+create kjd
+jjg -> kjd: 创建对象
+create jjd
+jjg -> jjd: 创建对象
+jjg -> sys: 提示管理员进行结算
+deactivate jjg
+deactivate jjg
+admin -> b_admin: 核实结算订单
+admin -> admin: 打款
+b_admin -> b_admin: 核实打款
+admin -> sys: 修改卡券结算订单
+activate sys
+sys -> jjd: 修改订单状态: 已结算
+deactivate sys
+@endUML
+
+@startUML
+scale 3
+title 类图汇总
+class cl001 as "用户" <cl001>
+class cl002 as "用户关联关系" <cl002>
+class cl003 as "商家" <cl003>
+class cl004 as "未关联商家列表" <cl004>
+class cl005 as "批量关联商家列表" <cl005>
+class cl006 as "积分账户" <cl006>
+class cl007 as "积分" <cl007>
+class cl008 as "积分发放订单" <cl008>
+class cl009 as "积分发放规则" <cl009>
+class cl010 as "消费订单" <cl010>
+class cl011 as "批量发放订单列表" <cl011>
+class cl012 as "卡券账户" <cl012>
+class cl013 as "卡券" <cl013>
+class cl014 as "卡券仓库" <cl014>
+class cl015 as "推荐消息" <cl015>
+class cl016 as "推荐规则" <cl016>
+class cl017 as "触发条件" <cl017>
+class cl018 as "购买卡券订单" <cl018>
+class cl019 as "卡券二维码" <cl019>
+class cl020 as "引导消息" <cl020>
+class cl021 as "引导规则" <cl021>
+class cl022 as "卡券使用订单" <cl022>
+class cl023 as "积分结算规则" <cl023>
+class cl024 as "积分结算订单" <cl024>
+class cl025 as "可结算积分发放订单" <cl025>
+class cl026 as "卡券结算规则" <cl026>
+class cl027 as "卡券结算订单" <cl027>
+class cl028 as "可结算卡券使用订单" <cl028>
+class cl029 as "货品清单" <cl019>
+class cl030 as "对象画像" <cl030>
+@endUML
+
+@startUML
+scale 3
+title cl030对象画像类
+class cl030对象画像 {
+    id
+    对象特征
+}
+@endUML
+
+@startUML
+scale 3
+title cl029货品清单类
+class cl029货品清单 {
+    id
+    卡券id
+}
+@endUML
+
+@startUML
+scale 3
+title cl028可结算卡券使用订单类
+class cl028可结算卡券使用订单 {
+    id
+    结算周期
+    卡券使用订单id
+}
+@endUML
+
+@startUML
+scale 3
+title cl027卡券结算订单类
+class cl027卡券结算订单 {
+    id
+    可结算订单id
+    金额
+    状态
+}
+@endUML
+
+@startUML
+scale 3
+title cl026卡券结算规则类
+class cl026卡券结算规则 {
+    id
+    商家id
+    结算周期
+    监控结算周期()
+}
+@endUML
+
+@startUML
+scale 3
+title cl025可结算积分发放订单类
+class cl025可结算积分发放订单 {
+    id
+    结算同期
+    发放订单id
+}
+@endUML
+
+@startUML
+scale 3
+title cl024积分结算订单类
+class cl024积分结算订单 {
+    id
+    可结算订单id
+    金额
+    状态
+}
+@endUML
+
+@startUML
+scale 3
+title cl023积分结算规则类
+class cl023积分结算规则 {
+    id
+    商家id
+    结算周期
+    结算价格
+    监控结算周期()
+}
+@endUML
+
+@startUML
+scale 3
+title cl022卡券使用订单类
+class cl022卡券使用订单 {
+    id
+    商家id
+    用户id
+    货品清单id
+    备注信息
+    订单状态
+    查询可结算卡券使用订单()
+}
+@endUML
+
+@startUML
+scale 3
+title cl021引导规则类
+class cl021引导规则 {
+    id
+    触发条件id
+    引导卡券
+    引导内容
+    对象画像id
+    状态
+    创建引导消息()
+    监控触发条件()
+}
+@endUML
+
+@startUML
+scale 3
+title cl020引导消息类
+class cl020引导消息 {
+    id
+    引导卡券id
+    引导内容
+    发送引导使用消息()
+    打开使用卡券详情页面()
+}
+@endUML
+
+@startUML
+scale 3
+title cl019卡券二维码类
+class cl019卡券二维码 {
+    id
+    卡券id
+    用户商家标识
+    创建时间
+    可存续时长
+    状态
+    获取卡券核销信息()
+    失效()
+}
+@endUML
+
+@startUML
+scale 3
+title cl018购买卡券订单类
+class cl018购买卡券订单 {
+    id
+    货品清单id
+    积分id
+    应付金额
+    实付金额
+    备注信息
+    订单状态
+    查询订单()
+}
+@endUML
+
+@startUML
+scale 3
+title cl017触发条件类
+class cl017触发条件类 {
+    id
+    判断项目
+    判断方式
+    判断值
+    组
+    判断条件()
+}
+@endUML
+
+@startUML
+scale 3
+title cl016推荐规则类
+class cl016推荐规则 {
+    id
+    触发条件
+    推荐卡券id
+    推荐内容
+    对象画像id
+    状态
+    创建推荐消息()
+    监控触发条件()
+}
+@endUML
+
+@startUML
+scale 3
+title cl015推荐消息类
+class cl015推荐消息 {
+    id
+    推荐卡券id
+    推荐卡券内容
+    打开推荐卡券()
+    发送推荐卡券()
+}
+@endUML
+
+@startUML
+scale 3
+title cl014卡券仓库类
+class cl014卡券仓库 {
+    id
+    商家id
+    卡券库存
+    库存查询()
+    库存减少()
+}
+@endUML
+
+@startUML
+scale 3
+title cl013卡券类
+class cl013卡券 {
+    id
+    卡券名称
+    卡券简介
+    卡券价格
+    状态
+    查询卡券价格()
+    确认卡券()
+    创建卡券()
+}
+@endUML
+
+@startUML
+scale 3
+title cl012卡券账户类
+class cl012卡券账户 {
+    id
+    用户id
+    卡券id
+    卡券余额
+    查询卡券用户()
+    查询卡券余额()
+    增加卡券()
+    扣减卡券()
+    创建二维码()
+}
+@endUML
+
+@startUML
+scale 3
+title cl011批量发放订单列表类
+class cl011批量发放订单列表 {
+    id
+    商家id
+    用户id
+    商家订单id
+    取出订单()
+}
+@endUML
+
+@startUML
+scale 3
+title cl010消费订单类
+class 消费订单 {
+    id
+    商家id
+    用户id
+    积分发放状态
+    查询商家订单()
+}
+@endUML
+
+@startUML
+scale 3
+title cl009积分发放规则类
+class cl009积分发放规则 {
+    id
+    商家id
+    规则类型
+    判断项目
+    判断值
+    影响类型
+    影响值
+    叠加类型
+    叠加对象
+    组
+    计算积分发放值()
+}
+@endUML
+
+@startUML
+scale 3
+title cl008积分发放订单类
+class cl008积分发放订单 {
+    id
+    商家id
+    消费订单id
+    用户id
+    积分id
+    发放数量
+    订单状态
+    查询可结算积分发放订单()
+}
+@endUML
+
+@startUML
+scale 3
+title cl007积分类
+class cl007积分 {
+    id
+    积分名称
+    积分价格
+    查询积分价格()
+}
+@endUML
+
+@startUML
+scale 3
+title cl006积分账户类
+class cl006积分账户 {
+    id
+    用户id
+    积分id
+    积分余额
+    查询积分账户()
+    增加积分()
+    扣减积分()
+}
+@endUML
+
+@startUML
+scale 3
+title cl005批量关联商家列表类
+class cl005批量关联商家列表 {
+    id
+    商家id
+    取出商家()
+    查询剩余商家数()
+}
+@endUML
+
+@startUML
+scale 3
+title cl001用户类
+class cl001用户 {
+    id
+    用户名
+    密码
+    用户积分卡券系统唯一标识
+    登录状态
+    用户状态
+    积分账户id
+    卡券账户id
+    用户昵称
+    手机号
+    注册()
+    获取验证码()
+    登录()
+    用户跳转登录()
+    批量关联()
+    手动关联()
+    下单()
+    支付()
+    使用卡券()
+    修改昵称()
+    绑定手机号()
+    解绑手机号()
+    修改密码()
+    退出登录()
+    修改用户登录状态()
+    修改用户状态()
+}
+@endUML
+
+@startUML
+scale 3
+title cl002用户关联关系类
+class cl002用户关联关系 {
+    id
+    用户id
+    用户积分卡券系统唯一村
+    商家id
+    商家唯一标识
+    用户商家唯一标识
+    未关联商家列表id
+    查询标识()
+    账号关联()
+    创建未关联商家()
+}
+@endUML
+
+@startUML
+scale 3
+title cl003商家类
+class cl003商家 {
+    id
+    商家名称
+    商家唯一标识
+    是否可批量关联
+    卡券仓库id
+    发放积分()
+    批量发放积分()
+    核销卡券()
+}
+@endUML
+
+@startUML
+scale 3
+title cl004未关联商家列表类
+class cl004未关联商家列表 {
+    id
+    商家id
+    创建批量关联商家列表()
+}
+@endUML
+
+@startUML
+scale 3
+title cl001用户_用户登录状态机
+state 001 as "未登录"
+state 002 as "登录" 
+
+001 -> 002: 登录
+002 -left-> 001: 退出登录
+
+001 : 用户进入积分卡券系统时进入打开登录页面
+@endUML
+
+@startUML
+scale 3
+title cl001用户_用户状态机
+state 001 as "正常"
+state 002 as "冻结"
+
+001 -> 002: 冻结
+002 -left-> 001: 解除冻结
+
+002 : 用户可以登录积分卡券系统但不能进行购买卡券和使用卡券的操作
+@endUML
+
+@startUML
+scale 3
+title cl001用户_获取短信验证码
+box "积分卡券系统"
+participant 用户 as c_user
+end box
+participant 短信服务提供商 as b
+
+-> c_user: 获取短信验证码(用户手机号)
+c_user -> b: 调用 [获取短信验证码] 接口
+alt 获取成功
+b --> c_user: 返回消息: 验证码
+c_user -> c_user: 保存验证码
+<-- c_user: 返回消息: 获取验证码成功
+else 获取验证码失败
+b --> c_user: 返回消息: 失败信息
+<-- c_user: 返回消息: 失败信息
+end
+@endUML
+
+@startUML
+scale 3
+title cl001用户_注册
+box "积分卡券系统"
+participant 用户 as a
+database 数据库 as d
+end box
+-> a: 注册(短信验证码, 用户名, 密码)
+alt 短信验证码不存在
+<-- a: 返回消息: 注册失败, 验证码不存在
+else 验证码存在 
+a -> d: 查询用户(用户名)
+alt 用户名存在
+d --> a: 返回消息: 用户存在
+<-- a: 返回消息: 注册失败: 用户名重复
+else 用户名不存在
+d --> a: 用户名不存在
+a -> d: 创建用户
+a -> a: 登录()
+a --> a: 返回消息: 登录成功
+<-- a: 返回消息: 注册成功
+end
+end
+a -> : 记录日志()
+@endUML
+
+@startUML
+scale 3
+title cl001用户_登录
+participant 用户 as a
+database 数据库 as d
+-> a: 登录(用户名, 密码)
+a -> d: 查询用户名
+alt 用户名不存在
+d --> a: 用户名不存在
+<-- a: 返回消息: 用户名或密码错误
+else 用户名存在
+d --> a: 用户名存在
+a --> d: 查询用户名与密码是否一致
+alt 用户名与密码不一致
+d --> a: 返回消息: 用户名与密码不一至
+<-- a: 返回消息: 用户名或密码错误
+else 用户名与密码一致
+d --> a: 返回消息: 用户名与密码一致
+a -> a: 修改用户登录状态(登录)
+<-- a: 用户登录成功
+end
+a ->: 记录日志()
+end
+@endUML
+
+@startUML
+scale 3
+title cl001用户_跳转登录
+participant 用户 as a
+participant 用户关联关系 as b
+-> a: 跳转登录(商家唯一标识, 用户商家唯一标识)
+a -> b: 查询标识(商家唯一标识, 用户商家唯一标识)
+alt 标识存在
+b --> a: 返回消息: 标识存在
+a -> a: 修改登录状态(登录)
+<-- a: 返回消息: 登录成功
+else 标识不存在
+b --> a: 返回消息: 标识不存在
+a -> a: 注册()
+alt 注册失败
+a --> a: 返回消息: 注册失败
+<-- a: 返回消息: 登录失败
+else 注册成功
+a --> a: 返回消息: 注册成功
+a -> b: 账号关联(用户id, 商家唯一标识, 用户唯一标识)
+b --> a: 关联成功
+a -> a: 修改登录状态(登录)
+<-- a: 返回消息: 登录成功
+end
+end
+a ->: 日志记录()
+@endUML
+
+@startUML
+scale 3
+title cl001用户_批量关联
+participant 商家系统 as b
+box "积分卡券系统"
+participant 用户 as a
+participant 用户关联关系 as c
+participant 用户未关联商家 as d
+participant 批量关联商家列表 as e
+end box
+-> a: 批量关联(商家唯一标识列表)
+a -> c: 创建用户未关联商家(用户唯一标识)
+alt 创建失败
+c --> a: 返回消息: 失败原因
+<-- a: 返回消息: 失败原因
+else 创建成功
+create d
+c -> d: 创建对象
+c --> a: 返回消息: [用户未关联商家] id
+a -> d: 创建批量关联商家列表()
+alt 创建失败
+d --> a: 返回消息: 失败原因
+<-- a: 返回消息: 失败原因
+else 创建成功
+create e
+d -> e: 创建对象
+d --> a: 返回消息: [批量关联商家列表] id
+loop 剩余商家数 > 0
+a -> e: 取出商家()
+e --> a: 返回消息: 商家id
+a -> b: 调用 [批量关联接口]
+b --> a: 返回消息: 用户商家唯一标识
+a -> c: 关联账号(用户id, 商家唯一标识, 用户商用唯一标识)
+alt 关联失败
+c --> a: 返回消息: 关联失败
+else 关联成功
+c --> a: 返回消息: 关联成功
+end
+a -> e: 查询剩余商家数()
+e --> a:返回消息: 剩余商家数
+end
+<-- a: 返回消息: 批量关联结果
+end
+end
+a ->: 日志记录()
+@endUML
+
+@startUML
+scale 3
+title cl001用户_手动关联
+participant 商家系统 as b
+box "积分卡券系统"
+participant 用户 as a
+participant 用户关联 as c
+end box
+-> a: 手动关联(商家id)
+a -> b: 调用 [用户身份验证接口]
+alt 超时
+<-- a: 返回消息: 关联失败, 关联超时
+else 身份验证失败
+b --> a: 返回消息: 身份验证失败
+<-- a: 返回消息: 关联失败, 失败超时
+else 身份验证成功
+b --> a: 返回消息: 用户商家唯一标识
+a -> c: 关联账户(用户id, 商家唯一标识, 用户商家唯一标识)
+c --> a: 返回消息: 关联成功
+<-- a: 返回消息: 关联成功
+end
+a ->: 日志记录()
+@endUML
+
+@startUML
+scale 3
+title cl001用户_下单
+participant 用户 as a
+participant 卡券库存 as b
+participant 购买订单 as c
+
+-> a: 下单(卡券 id)
+a -> b: 
+@endUM 
+
+@startUML
+scale 3
+title cl001用户_使用卡券
+@endUML
+
+@startUML
+scale 3
+title cl001用户_修改昵称
+@endUML
+
+@startUML
+scale 3
+title cl001用户_绑定手机号
+@endUML
+
+@startUML
+scale 3
+title cl001用户_解绑手机号
+@endUML
+
+@startUML
+scale 3
+title cl001用户_修改密码
+@endUML
+
+@startUML
+scale 3
+title cl001用户_退出登录
+@endUML
+
+@startUML
+scale 3
+title cl001用户_修改用户登录状态
+@endUML
+
+@startUML
+scale 3
+title cl001用户_修改用户状态
+@endUML

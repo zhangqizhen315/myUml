@@ -1,0 +1,122 @@
+@startUML
+scale 3
+title cl009交易记录
+class "交易记录" as cl009 <009>
+
+class "GPS" as cl009_1 <009_1>
+class "TMS" as cl009_2 <009_2>
+class "SAAS" as cl009_3 <009_3>
+
+cl009 --> cl009_1
+cl009 --> cl009_3
+cl009 --> cl009_3
+@endUML
+
+@startUML
+!include ./cl006.wsd!1
+!include ./cl006.wsd!2
+!include ./cl006.wsd!3
+scale 3
+title 1
+cl006 --> cl006_1
+cl006 --> cl006_2
+@endUML
+
+@startUML
+title 1_cl006银行流水
+class "银行流水" as cl006 <006>
+@endUML
+
+@startUML
+title 2_cl006_1个人银行流水
+class "个人银行流水" as cl006_1 <006_1> {
+    交易时间
+    支出
+    收入
+    账户余额
+    对方账户
+    对方户名
+    币种
+    摘要（转账, 支出, 收入）
+}
+@endUML
+
+@startUML
+title 3_cl006_2
+class "企业银行流水" as cl006_2 <006_2> {
+    交易时间
+    发生额_借方
+    发生额_贷方
+    余额
+    对方户名
+    对方账户
+    对方开户机构
+    记账日期
+}
+@endUML
+
+@startUML
+scale 3
+title cl007开票记录
+class "开票记录" as cl007 <007>
+class "普通票" as cl007_1 <007_1>
+class "专用票" as cl007_2 <007_2>
+
+cl007 : 增值税专用发票代码
+cl007 : 增值税专用发票号码
+cl007 : 开票日期
+cl007 : 购买方_名称
+cl007 : 购买方_纳税人识别号
+cl007 : 购买人_地址
+cl007 : 购买人_电话
+cl007 : 货物或应税劳务, 服务名称
+cl007 : 规格型号
+cl007 : 单位
+cl007 : 数量
+cl007 : 单价
+cl007 : 金额
+cl007 : 税率
+cl007 : 税额
+cl007 : 价格合计
+cl007 : 销售方
+cl007 : 收款人
+
+cl007_2 : 增值税发票代码
+cl007_2 : 增值税发票号码
+
+cl007 --> cl007_1
+cl007 --> cl007_2
+@endUML
+
+@startUML
+scale 3
+title cl007开票记录
+class "开票记录" as cl007 <007>
+class "普通票" as cl007_1 <007_1>
+class "专用票" as cl007_2 <007_2>
+
+cl007 : 增值税专用发票代码
+cl007 : 增值税专用发票号码
+cl007 : 开票日期
+cl007 : 购买方_名称
+cl007 : 购买方_纳税人识别号
+cl007 : 购买人_地址
+cl007 : 购买人_电话
+cl007 : 货物或应税劳务, 服务名称
+cl007 : 规格型号
+cl007 : 单位
+cl007 : 数量
+cl007 : 单价
+cl007 : 金额
+cl007 : 税率
+cl007 : 税额
+cl007 : 价格合计
+cl007 : 销售方
+cl007 : 收款人
+
+cl007_2 : 增值税发票代码
+cl007_2 : 增值税发票号码
+
+cl007 --> cl007_1
+cl007 --> cl007_2
+@endUML
