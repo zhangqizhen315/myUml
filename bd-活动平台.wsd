@@ -1,0 +1,46 @@
+@startuml
+title 平台架构图
+rectangle "运营系统" as yunYing {
+    rectangle "业务模块" as yeWu {
+        rectangle a
+        rectangle b
+        rectangle c
+    
+        a - b
+    }
+    rectangle "活动库" as huoDong {
+        rectangle "注册活动" as zhuCeHuoDong
+        rectangle "查询活动" as chaXunHuoDong
+        rectangle "执行活动" as zhiXingHuoDong
+        zhuCeHuoDong -[hidden]- chaXunHuoDong
+        chaXunHuoDong -[hidden]- zhiXingHuoDong
+
+    }
+    rectangle "判断因子库" as panDan {
+        rectangle "注册判断" as zhuCePanDuan
+        rectangle "查询判断" as chaXunPanDuan
+        rectangle "执行判断" as zhiXingPanDuan
+        zhuCePanDuan -[hidden]- chaXunPanDuan
+        chaXunPanDuan -[hidden]- zhiXingPanDuan
+    }
+    rectangle "发放库" as zhiXing {
+        rectangle "注册发放" as zhuCeFaFang
+        rectangle "查询发放" as chaXunFaFang
+        rectangle "执行发放" as zhiXingFaFang
+        zhuCeFaFang -[hidden]- chaXunFaFang
+        chaXunFaFang -[hidden]- zhiXingFaFang
+    }
+    yeWu -[hidden]- huoDong
+    yeWu -[hidden]- panDan
+    yeWu -[hidden]- zhiXing
+
+    hide a
+    hide b
+    hide c
+    show yeWu
+}
+
+rectangle "外部渠道" as waiBu {
+
+}
+@enduml
